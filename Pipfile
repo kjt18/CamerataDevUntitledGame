@@ -4,6 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+flask = "*"
+tcod = "*"
+dependency-injector = "*"
 
 [dev-packages]
 
