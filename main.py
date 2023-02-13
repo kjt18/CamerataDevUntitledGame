@@ -5,7 +5,7 @@ import tcod
 
 import color
 from engine import Engine
-import entity_factories
+from Entities import entity_factories
 from procgen import generate_dungeon
 
 
@@ -22,8 +22,7 @@ def main() -> None:
 
     max_monsters_per_room = 2
 
-    tileset = tcod.tileset.load_tilesheet(
-        "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+    tileset = tcod.tileset.load_tilesheet("img/dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
     player = copy.deepcopy(entity_factories.player)

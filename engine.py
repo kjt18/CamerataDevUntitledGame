@@ -9,10 +9,10 @@ from input_handlers import MainGameEventHandler
 # import file that allows messages to print to application
 from message_log import MessageLog
 # import file that allows health bar to show in application
-from render_functions import render_bar, render_names_at_mouse_location
+from Render.render_functions import render_bar, render_names_at_mouse_location
 
 if TYPE_CHECKING:
-    from entity import Actor
+    from Entities.entity import Actor
     from game_map import GameMap
     from input_handlers import EventHandler
 

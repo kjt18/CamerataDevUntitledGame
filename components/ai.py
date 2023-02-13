@@ -9,7 +9,7 @@ from actions import Action, MeleeAction, MovementAction, WaitAction
 from components.base_component import BaseComponent
 
 if TYPE_CHECKING:
-    from entity import Actor
+    from Entities.entity import Actor
 
 
 class BaseAI(Action, BaseComponent):

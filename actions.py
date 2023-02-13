@@ -6,7 +6,7 @@ import color
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Actor, Entity
+    from Entities.entity import Actor, Entity
 
 
 class Action:
