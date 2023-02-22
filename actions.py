@@ -57,7 +57,7 @@ class PickupAction(Action):
 
 class ItemAction(Action):
     def __init__(
-            self, entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]] = None
+        self, entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]] = None
     ):
         super().__init__(entity)
         self.item = item
