@@ -7,7 +7,10 @@ import tcod
 import color
 from engine import Engine
 import entity_factories
+import exceptions
+import input_handlers
 from procgen import generate_dungeon
+import setup_game
 
 
 def main() -> None:
@@ -48,6 +51,9 @@ def main() -> None:
         "Hello, Welcome Adventure to CamerataDevUntitledGame!", color.welcome_text
     )
 
+    handler: input_handlers.BaseEventHandler = input_handlers.MainGameEventHandler(engine)
+    # handler: input_handlers.BaseEventHandler = setup_game.new_game()
+
     with tcod.context.new_terminal(
             screen_width,
             screen_height,
@@ -56,19 +62,37 @@ def main() -> None:
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
+        # while True:
+        #     root_console.clear()
+        #     engine.event_handler.on_render(console=root_console)
+        #     context.present(root_console)
+        #
+        #     try:
+        #         for event in tcod.event.wait():
+        #             context.convert_event(event)
+        #             engine.event_handler.handle_events(event)
+        #     except Exception:  # Handle exceptions in game.
+        #         traceback.print_exc()  # Print error to stderr.
+        #         # Then print the error to the message log.
+        #         engine.message_log.add_message(traceback.format_exc(), color.error)
         while True:
             root_console.clear()
-            engine.event_handler.on_render(console=root_console)
+            handler.on_render(console=root_console)
             context.present(root_console)
 
             try:
                 for event in tcod.event.wait():
                     context.convert_event(event)
-                    engine.event_handler.handle_events(event)
+                    handler = handler.handle_events(event)
             except Exception:  # Handle exceptions in game.
                 traceback.print_exc()  # Print error to stderr.
                 # Then print the error to the message log.
-                engine.message_log.add_message(traceback.format_exc(), color.error)
+                if isinstance(handler, input_handlers.EventHandler):
+                    handler.engine.message_log.add_message(
+                        traceback.format_exc(), color.error
+                    )
+            # except exceptions.QuitWithoutSaving:
+            #     raise
 
 
 if __name__ == "__main__":
