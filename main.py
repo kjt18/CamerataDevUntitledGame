@@ -47,12 +47,7 @@ def main() -> None:
     )
     engine.update_fov()
 
-    engine.message_log.add_message(
-        "Hello, Welcome Adventure to CamerataDevUntitledGame!", color.welcome_text
-    )
-
     handler: input_handlers.BaseEventHandler = input_handlers.MainGameEventHandler(engine)
-    # handler: input_handlers.BaseEventHandler = setup_game.new_game()
 
     with tcod.context.new_terminal(
             screen_width,
@@ -62,19 +57,6 @@ def main() -> None:
             vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        # while True:
-        #     root_console.clear()
-        #     engine.event_handler.on_render(console=root_console)
-        #     context.present(root_console)
-        #
-        #     try:
-        #         for event in tcod.event.wait():
-        #             context.convert_event(event)
-        #             engine.event_handler.handle_events(event)
-        #     except Exception:  # Handle exceptions in game.
-        #         traceback.print_exc()  # Print error to stderr.
-        #         # Then print the error to the message log.
-        #         engine.message_log.add_message(traceback.format_exc(), color.error)
         while True:
             root_console.clear()
             handler.on_render(console=root_console)
@@ -91,8 +73,6 @@ def main() -> None:
                     handler.engine.message_log.add_message(
                         traceback.format_exc(), color.error
                     )
-            # except exceptions.QuitWithoutSaving:
-            #     raise
 
 
 if __name__ == "__main__":
