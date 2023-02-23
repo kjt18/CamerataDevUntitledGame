@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class Engine:
+
     game_map: GameMap
     game_world: GameWorld
 
@@ -63,6 +64,3 @@ class Engine:
             console=console, x=21, y=44, engine=self
         )
 
-        render_functions.render_names_at_mouse_location(
-            console=console, x=21, y=44, engine=self
-        )
