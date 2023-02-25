@@ -1,0 +1,6 @@
+azure-functions
+Flask
+tcod~=15.0.0
+numpy~=1.24.2
+flaskapp~=1.0.5
+zerorpc~=0.6.3
