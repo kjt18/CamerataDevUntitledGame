@@ -1,16 +1,79 @@
-# This is a sample Python script.
+#!/usr/bin/env python3
+import copy
+import traceback
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import tcod
+
+import color
+from engine import Engine
+import entity_factories
+import exceptions
+import input_handlers
+from procgen import generate_dungeon
+import setup_game
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def main() -> None:
+    screen_width = 80
+    screen_height = 50
+
+    map_width = 80
+    map_height = 43
+
+    room_max_size = 10
+    room_min_size = 6
+    max_rooms = 30
+
+    max_monsters_per_room = 2
+    max_items_per_room = 2
+
+    tileset = tcod.tileset.load_tilesheet(
+        "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+    )
+
+    player = copy.deepcopy(entity_factories.player)
+
+    engine = setup_game.new_game()
+
+    engine.game_map = generate_dungeon(
+        max_rooms=max_rooms,
+        room_min_size=room_min_size,
+        room_max_size=room_max_size,
+        map_width=map_width,
+        map_height=map_height,
+        max_monsters_per_room=max_monsters_per_room,
+        max_items_per_room=max_items_per_room,
+        engine=engine,
+    )
+    engine.update_fov()
+
+    handler: input_handlers.BaseEventHandler = input_handlers.MainGameEventHandler(engine)
+
+    with tcod.context.new_terminal(
+            screen_width,
+            screen_height,
+            tileset=tileset,
+            title="CamerataDevUntitledGame",
+            vsync=True,
+    ) as context:
+        root_console = tcod.Console(screen_width, screen_height, order="F")
+        while True:
+            root_console.clear()
+            handler.on_render(console=root_console)
+            context.present(root_console)
+
+            try:
+                for event in tcod.event.wait():
+                    context.convert_event(event)
+                    handler = handler.handle_events(event)
+            except Exception:  # Handle exceptions in game.
+                traceback.print_exc()  # Print error to stderr.
+                # Then print the error to the message log.
+                if isinstance(handler, input_handlers.EventHandler):
+                    handler.engine.message_log.add_message(
+                        traceback.format_exc(), color.error
+                    )
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()
