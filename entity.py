@@ -129,7 +129,7 @@ class Item(Entity):
             color: Tuple[int, int, int] = (255, 255, 255),
             name: str = "<Unnamed>",
             consumable: Consumable,
-    ):
+    ) -> object:
         super().__init__(
             x=x,
             y=y,

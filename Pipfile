@@ -7,6 +7,10 @@ name = "pypi"
 flask = "*"
 tcod = "*"
 dependency-injector = "*"
+mysql = "*"
+mysql-connector-python = "*"
+pytest = "*"
+bcrypt = "*"
 
 [dev-packages]
 
