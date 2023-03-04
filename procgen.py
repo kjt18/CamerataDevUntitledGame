@@ -12,6 +12,30 @@ import tile_types
 if TYPE_CHECKING:
     from engine import Engine
 
+max_items_by_floor = [
+    (1, 1),
+    (4, 2),
+]
+
+max_monsters_by_floor = [
+    (1, 2),
+    (4, 3),
+    (6, 5),
+]
+
+
+def get_max_value_for_floor(
+        weighted_chances_by_floor: List[Tuple[int, int]], floor: int
+) -> int:
+    current_value = 0
+
+    for floor_minimum, value in weighted_chances_by_floor:
+        if floor_minimum > floor:
+            break
+        else:
+            current_value = value
+    return current_value
+
 
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
