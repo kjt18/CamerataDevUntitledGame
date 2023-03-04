@@ -94,7 +94,7 @@ class Actor(Entity):
             ai_cls: Type[BaseAI],
             fighter: Fighter,
             inventory: Inventory,
-    ):
+    ) -> object:
         super().__init__(
             x=x,
             y=y,
