@@ -30,6 +30,14 @@ troll = Actor(
     fighter=Fighter(hp=16, defense=1, power=4),
     inventory=Inventory(capacity=0),
 )
+skeleton = Actor(
+    char="S",
+    color=(5, 60, 5),
+    name="Skeleton",
+    ai_cls=HostileEnemy,
+    fighter=Fighter(hp=5, defense=1, power=1),
+    inventory=Inventory(capacity=0),
+)
 confusion_scroll = Item(
     char="~",
     color=(207, 63, 255),
