@@ -54,3 +54,21 @@ lightning_scroll = Item(
     name="Lightning Scroll",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
 )
+needle_of_fate = Item(
+    char="n",
+    color=(207, 63, 255),
+    name="Needle of Fate",
+    consumable=consumable.NeedleDamageConsumable(damage=500, maximum_range=1),
+)
+sword = Item(
+    char="s",
+    color=(207, 63, 255),
+    name="Sword",
+    consumable=consumable.SwordConsumable(damage=20, maximum_range=1),
+)
+axe = Item(
+    char="a",
+    color=(207, 63, 255),
+    name="Axe",
+    consumable=consumable.AxeConsumable(damage=30, maximum_range=1),
+)
