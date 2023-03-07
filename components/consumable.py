@@ -181,7 +181,7 @@ class NeedleDamageConsumable(Consumable):
 
         if target:
             self.engine.message_log.add_message(
-                f"You stabbed {target.name}, for {self.damage} damage!"
+                f"OHKO! {target.name} got shanked for {self.damage} damage!"
             )
             target.fighter.take_damage(self.damage)
             self.consume()
