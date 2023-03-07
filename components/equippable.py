@@ -13,10 +13,10 @@ class Equippable(BaseComponent):
     parent: Item
 
     def __init__(
-        self,
-        equipment_type: EquipmentType,
-        power_bonus: int = 0,
-        defense_bonus: int = 0,
+            self,
+            equipment_type: EquipmentType,
+            power_bonus: int = 0,
+            defense_bonus: int = 0,
     ):
         self.equipment_type = equipment_type
 
@@ -26,12 +26,22 @@ class Equippable(BaseComponent):
 
 class Dagger(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=2)
+        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=1)
 
 
 class Sword(Equippable):
     def __init__(self) -> None:
         super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=4)
+
+
+class Axe(Equippable):
+    def __init__(self) -> None:
+        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=5)
+
+
+# class NeedleOfFate(Equippable):
+#     def __init__(self) -> None:
+#         super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=500)
 
 
 class LeatherArmor(Equippable):

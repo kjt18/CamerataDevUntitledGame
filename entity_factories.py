@@ -6,7 +6,6 @@ from components.fighter import Fighter
 from components.inventory import Inventory
 from entity import Actor, Item
 
-
 player = Actor(
     char="@",
     color=(255, 255, 255),
@@ -23,7 +22,7 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),
+    fighter=Fighter(hp=10, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
 )
 troll = Actor(
@@ -32,7 +31,7 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),
+    fighter=Fighter(hp=16, base_defense=2, base_power=5),
     inventory=Inventory(capacity=0),
 )
 skeleton = Actor(
@@ -41,7 +40,7 @@ skeleton = Actor(
     name="Skeleton",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=5, base_defense=1, base_power=1),
+    fighter=Fighter(hp=5, base_defense=0, base_power=1),
     inventory=Inventory(capacity=0),
 )
 confusion_scroll = Item(
@@ -71,7 +70,14 @@ lightning_scroll = Item(
 dagger = Item(
     char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
 )
-sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword())
+sword = Item(
+    char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword()
+)
+axe = Item(
+    char="/", color=(0, 191, 255), name="Axe", equippable=equippable.Axe()
+)
+# needle_of_fate = Item(char="/", color=(0, 191, 255), name="NeedleOfFate", equippable=equippable.NeedleOfFate()
+# )
 
 leather_armor = Item(
     char="[",
