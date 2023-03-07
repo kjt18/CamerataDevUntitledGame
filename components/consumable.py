@@ -105,7 +105,7 @@ class FireballDamageConsumable(Consumable):
         for actor in self.engine.game_map.actors:
             if actor.distance(*target_xy) <= self.radius:
                 self.engine.message_log.add_message(
-                    f"The {actor.name} is engulfed in a fiery explosion, taking {self.damage} damage!"
+                    f"FIREBALL!The {actor.name} was enguled in flames, taking {self.damage} damage!"
                 )
                 actor.fighter.take_damage(self.damage)
                 targets_hit = True
@@ -161,85 +161,85 @@ class LightningDamageConsumable(Consumable):
             raise Impossible("No enemy is close enough to strike.")
 
 
-class NeedleDamageConsumable(Consumable):
-    def __init__(self, damage: int, maximum_range: int):
-        self.damage = damage
-        self.maximum_range = maximum_range
-
-    def activate(self, action: actions.ItemAction) -> None:
-        consumer = action.entity
-        target = None
-        closest_distance = self.maximum_range + 1.0
-
-        for actor in self.engine.game_map.actors:
-            if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
-                distance = consumer.distance(actor.x, actor.y)
-
-                if distance < closest_distance:
-                    target = actor
-                    closest_distance = distance
-
-        if target:
-            self.engine.message_log.add_message(
-                f"OHKO! {target.name} got shanked for {self.damage} damage!"
-            )
-            target.fighter.take_damage(self.damage)
-            self.consume()
-        else:
-            raise Impossible("No enemy is close enough to strike.")
-
-
-class SwordConsumable(Consumable):
-    def __init__(self, damage: int, maximum_range: int):
-        self.damage = damage
-        self.maximum_range = maximum_range
-
-    def activate(self, action: actions.ItemAction) -> None:
-        consumer = action.entity
-        target = None
-        closest_distance = self.maximum_range + 1.0
-
-        for actor in self.engine.game_map.actors:
-            if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
-                distance = consumer.distance(actor.x, actor.y)
-
-                if distance < closest_distance:
-                    target = actor
-                    closest_distance = distance
-
-        if target:
-            self.engine.message_log.add_message(
-                f"You slashed {target.name}, for {self.damage} damage!"
-            )
-            target.fighter.take_damage(self.damage)
-            self.consume()
-        else:
-            raise Impossible("No enemy is close enough to strike.")
-
-
-class AxeConsumable(Consumable):
-    def __init__(self, damage: int, maximum_range: int):
-        self.damage = damage
-        self.maximum_range = maximum_range
-
-    def activate(self, action: actions.ItemAction) -> None:
-        consumer = action.entity
-        target = None
-        closest_distance = self.maximum_range + 1.0
-
-        for actor in self.engine.game_map.actors:
-            if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
-                distance = consumer.distance(actor.x, actor.y)
-
-                if distance < closest_distance:
-                    target = actor
-                    closest_distance = distance
-
-        if target:
-            self.engine.message_log.add_message(
-                f"You Axed a question to {target.name}, for {self.damage} damage!"
-            )
-            target.fighter.take_damage(self.damage)
-            self.consume()
-        else:
-            raise Impossible("No enemy is close enough to strike.")
+# class NeedleDamageConsumable(Consumable):
+#     def __init__(self, damage: int, maximum_range: int):
+#         self.damage = damage
+#         self.maximum_range = maximum_range
+#
+#     def activate(self, action: actions.ItemAction) -> None:
+#         consumer = action.entity
+#         target = None
+#         closest_distance = self.maximum_range + 1.0
+#
+#         for actor in self.engine.game_map.actors:
+#             if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
+#                 distance = consumer.distance(actor.x, actor.y)
+#
+#                 if distance < closest_distance:
+#                     target = actor
+#                     closest_distance = distance
+#
+#         if target:
+#             self.engine.message_log.add_message(
+#                 f"OHKO! {target.name} got shanked for {self.damage} damage!"
+#             )
+#             target.fighter.take_damage(self.damage)
+#             self.consume()
+#         else:
+#             raise Impossible("No enemy is close enough to strike.")
+#
+#
+# class SwordConsumable(Consumable):
+#     def __init__(self, damage: int, maximum_range: int):
+#         self.damage = damage
+#         self.maximum_range = maximum_range
+#
+#     def activate(self, action: actions.ItemAction) -> None:
+#         consumer = action.entity
+#         target = None
+#         closest_distance = self.maximum_range + 1.0
+#
+#         for actor in self.engine.game_map.actors:
+#             if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
+#                 distance = consumer.distance(actor.x, actor.y)
+#
+#                 if distance < closest_distance:
+#                     target = actor
+#                     closest_distance = distance
+#
+#         if target:
+#             self.engine.message_log.add_message(
+#                 f"You slashed {target.name}, for {self.damage} damage!"
+#             )
+#             target.fighter.take_damage(self.damage)
+#             self.consume()
+#         else:
+#             raise Impossible("No enemy is close enough to strike.")
+#
+#
+# class AxeConsumable(Consumable):
+#     def __init__(self, damage: int, maximum_range: int):
+#         self.damage = damage
+#         self.maximum_range = maximum_range
+#
+#     def activate(self, action: actions.ItemAction) -> None:
+#         consumer = action.entity
+#         target = None
+#         closest_distance = self.maximum_range + 1.0
+#
+#         for actor in self.engine.game_map.actors:
+#             if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
+#                 distance = consumer.distance(actor.x, actor.y)
+#
+#                 if distance < closest_distance:
+#                     target = actor
+#                     closest_distance = distance
+#
+#         if target:
+#             self.engine.message_log.add_message(
+#                 f"You Axed a question to {target.name}, for {self.damage} damage!"
+#             )
+#             target.fighter.take_damage(self.damage)
+#             self.consume()
+#         else:
+#             raise Impossible("No enemy is close enough to strike.")
