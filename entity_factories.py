@@ -12,7 +12,7 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=50, base_defense=2, base_power=15),
+    fighter=Fighter(hp=50, base_defense=2, base_power=5),
     inventory=Inventory(capacity=26),
 )
 
@@ -22,7 +22,7 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=1, base_power=4),
+    fighter=Fighter(hp=11, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
 )
 troll = Actor(
@@ -31,7 +31,7 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=2, base_power=5),
+    fighter=Fighter(hp=20, base_defense=2, base_power=5),
     inventory=Inventory(capacity=0),
 )
 skeleton = Actor(
@@ -40,7 +40,7 @@ skeleton = Actor(
     name="Skeleton",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=5, base_defense=0, base_power=1),
+    fighter=Fighter(hp=5, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
 )
 confusion_scroll = Item(
