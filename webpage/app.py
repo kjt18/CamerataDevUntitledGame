@@ -1,9 +1,12 @@
 from flask import Flask, render_template
+
 # import os
 
 # DOG_FOLDER = os.path.join('static', 'dog_photo')
 
 app = Flask(__name__)
+
+
 # app.config['UPLOAD_FOLDER'] = DOG_FOLDER
 
 
@@ -28,6 +31,16 @@ def about():
 @app.route('/game')
 def game():
     return render_template('game.html')
+
+
+@app.route('/public')
+def public():
+    return render_template('public.html')
+
+
+@app.route('/private')
+def private():
+    return render_template('private.html')
 
 
 if __name__ == '__main__':

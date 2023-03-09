@@ -114,7 +114,6 @@
             </div>
         </div>
     </div>
-
 </section>
 <!--start game portion-->
 <div id="myModal" class="modal d-block position-relative text-light" tabindex="-1" role="dialog"
@@ -138,6 +137,7 @@
         </div>
     </div>
 </div>
+<!--How to play section-->
 <section id="cards2" class="container pb-2">
     <div class="d-flex my-3">
         <div class="jumbotron w-100 mx-auto text-light bg-dark-gray">
@@ -171,29 +171,33 @@
         </div>
     </div>
 </section>
-<!-- add screen shots of game possible -->
+<!-- Carousel component starts here -->
 <div class="container-fluid">
     <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
         <!-- Indicators -->
+        <!-- add to the indicators list if you want to add more slides-->
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
             <li data-target="#myCarousel" data-slide-to="2"></li>
         </ol>
-
-        <!-- Slides -->
+        <!-- add screenshots to static directory-->
         <div class="carousel-inner">
             <div class="carousel-item active">
+                <!-- add screenshot 1 -->
                 <img src="{{ url_for('static', filename='dog.png') }}" alt="dog slide 1" style="width:50%; height:50%;">
             </div>
+            <!-- add screenshot 2 -->
             <div class="carousel-item">
                 <img src="{{ url_for('static', filename='dog2.png') }}" alt="dog slide 2"
                      style="width:50%; height:50%;">
             </div>
+            <!-- add screenshot 3 -->
             <div class="carousel-item">
                 <img src="{{ url_for('static', filename='dog3.png') }}" alt="dog slide 3"
                      style="width:50%; height:50%;">
             </div>
+            <!-- note: you can add more slides by copy and pasting -->
         </div>
 
         <!-- Controls -->
@@ -226,6 +230,7 @@
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+
 </script>
 <script>
     window.addEventListener('scroll', function() {
@@ -240,6 +245,7 @@
             modal.classList.remove('fade-in');
         }
     });
+
 </script>
 </body>
 </html>
