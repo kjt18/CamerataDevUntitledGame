@@ -26,7 +26,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
             <a class="nav-link" href="/about">About</a>
             <a class="nav-link" href="/game">Game</a>
             <a class="nav-link disabled">Future Features</a>
@@ -38,44 +38,65 @@
 <div class="jumbotron py-4 p-md-5 text-white rounded" style="background-color:black">
     <div class="col-md-6 pt-3 px-0">
         <h1 class="display-4 font-italic">Insert title that leads to the about page here</h1>
-        <p class="lead my-3">some stuff about the team goes here, talks about stuff add stuff here.</p>
+        <p class="lead my-3">some stuff about the team goes here, talks about stuff add stuff here.
+        some stuff about the team goes here, talks about stuff add stuff here
+        some stuff about the team goes here, talks about stuff add stuff here
+        some stuff about the team goes here, talks about stuff add stuff here</p>
         <p class="lead mb-0"><a href="/about" class="text-white font-weight-bold">Continue reading...</a></p>
     </div>
 </div>
 <!--add content on how to play the game-->
 <section id="cards" class="container pb-5">
     <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
             <h1>GameName</h1>
             <h4>Rogue-like Online Multiplayer Game</h4>
             <p class="lead">
-                Insert description of game here
+                Insert description of game hereInsert description of game hereInsert description of game hereInsert description of game hereInsert description of game here
+                Insert description of game hereInsert description of game hereInsert description of game hereInsert description of game hereInsert description of game here
+                Insert description of game hereInsert description of game hereInsert description of game hereInsert description of game hereInsert description of game here
+                Insert description of game hereInsert description of game hereInsert description of game hereInsert description of game hereInsert description of game here
             </p>
         </div>
     </div>
     <!--add content on entities in game/items-->
     <div class="row">
         <div class="col-lg-4 mb-4">
-            <div class="card border-light bg-dark text-light h-100">
+            <div class="card border-light bg-dark-gray text-light h-100">
                 <div class="card-body d-flex flex-column align-items-start">
-                    <h4 class="card-title">Enemy Types</h4>
-                    <p class="card-text">Insert Enemy Types here</p>
+                    <h4 class="card-title font-weight-bold">Enemy Types</h4>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of potion">Potion</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of scroll">Lightning Scroll</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="efeects of fireball">Fireball</a>
+                    <br>
                 </div>
             </div>
         </div>
         <div class="col-lg-4 mb-4">
-            <div class="card border-light bg-dark text-light h-100">
+            <div class="card border-light bg-dark-gray text-light h-100">
                 <div class="card-body d-flex flex-column align-items-start">
-                    <h4 class="card-title">Consumables</h4>
-                    <p class="card-text">Insert Consumable list here</p>
+                    <h4 class="card-title font-weight-bold">Consumables</h4>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of potion">Potion</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of scroll">Lightning Scroll</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="efeects of fireball">Fireball</a>
+                    <br>
                 </div>
             </div>
         </div>
         <div class="col-lg-4 mb-4">
-            <div class="card border-light bg-dark text-light h-100">
+            <div class="card border-light bg-dark-gray text-light h-100 ">
                 <div class="card-body d-flex flex-column align-items-start">
-                    <h4 class="card-title">Equipment</h4>
-                    <p class="card-text">insert Equipment list here</p>
+                    <h4 class="card-title font-weight-bold">Equipment</h4>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of potion">Potion</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="effects of scroll">Lightning Scroll</a>
+                    <br>
+                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom" title="efeects of fireball">Fireball</a>
+                    <br>
                 </div>
             </div>
         </div>
@@ -83,10 +104,10 @@
 </section>
 
 <!--start game portion-->
-<div id="myModal" class="modal d-block position-relative bg-black text-light" tabindex="-1" role="dialog"
+<div id="myModal" class="modal d-block position-relative text-light" tabindex="-1" role="dialog"
      aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark">
+        <div class="modal-content bg-dark-gray">
             <div class="modal-header">
                 <h3>Ready to start a game?</h3>
             </div>
@@ -94,7 +115,9 @@
                 <p>Insert text about public/ private games here.</p>
             </div>
             <div class="modal-footer">
-                <a href="/game" class="btn btn-outline-light btn-lg border-light text-light bg-dark">Play Now</a>
+                <a href="/game"
+                   class="btn btn-outline-secondary btn-lg border-secondary text-light bg-danger font-weight-bold">Play
+                    Now</a>
             </div>
         </div>
     </div>
@@ -117,10 +140,12 @@
                 <img src="{{ url_for('static', filename='dog.png') }}" alt="dog slide 1" style="width:50%; height:50%;">
             </div>
             <div class="carousel-item">
-                <img src="{{ url_for('static', filename='dog2.png') }}" alt="dog slide 2" style="width:50%; height:50%;">
+                <img src="{{ url_for('static', filename='dog2.png') }}" alt="dog slide 2"
+                     style="width:50%; height:50%;">
             </div>
             <div class="carousel-item">
-                <img src="{{ url_for('static', filename='dog3.png') }}" alt="dog slide 3" style="width:50%; height:50%;">
+                <img src="{{ url_for('static', filename='dog3.png') }}" alt="dog slide 3"
+                     style="width:50%; height:50%;">
             </div>
         </div>
 
@@ -148,5 +173,13 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+</script>
 </body>
 </html>
