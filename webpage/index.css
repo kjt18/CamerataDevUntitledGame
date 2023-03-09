@@ -2,9 +2,6 @@ html {
     position: relative;
     min-height: 100%;
 }
-main {
-    background-color: darkgrey;
-}
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
