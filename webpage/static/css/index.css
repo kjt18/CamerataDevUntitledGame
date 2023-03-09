@@ -16,3 +16,17 @@ footer {
 .bg-dark-gray {
     background-color: #1C1716;
 }
+.title-banner {
+    position: absolute;
+}
+/*
+* fade effect for play game container
+*/
+#myModal {
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+#myModal.fade-in {
+    opacity: 1;
+}
