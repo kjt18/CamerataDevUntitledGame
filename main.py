@@ -63,16 +63,17 @@ class Main:
         self.root_console = tcod.Console(self.screen_width, self.screen_height, order="F")
 
         self.context = tcod.context.new_terminal(
-                self.screen_width,
-                self.screen_height,
-                tileset=self.tileset,
-                title="CamerataDevUntitledGame",
-                vsync=True,)
+            self.screen_width,
+            self.screen_height,
+            tileset=self.tileset,
+            title="CamerataDevUntitledGame",
+            vsync=True, )
         self.render_console()
 
+    # Use this as a template for all other relevant events
     def move_up(self):
 
-        self.handle_event(tcod.event.K_UP)
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_UP, tcod.event.K_UP, tcod.event.Modifier.NONE))
         self.render_console()
 
         return self.root_console.__str__()
