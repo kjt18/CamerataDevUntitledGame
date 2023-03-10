@@ -19,28 +19,50 @@
 <body style="background-color:black">
 <!--navbar template, change routing to pages-->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav" style="background-color:black">
-    <a class="navbar-brand" href="/">Camerata Developments</a>
+    <a class="navbar-brand mr-auto" href="/">Camerata Developments&nbsp;&nbsp;</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
-            <a class="nav-link" href="/about">About</a>
-            <a class="nav-link" href="/game">Game</a>
-            <a class="nav-link disabled">Future Features</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+            </li>
+        </ul>
+        {% if session.username %}
+        <div class="d-flex justify-content-between">
+            <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
+            <form method="post" action="{{ url_for('logout') }}">
+                <button type="submit" class="nav-link btn btn-primary text-light">Logout</button>
+            </form>
         </div>
+        {% else %}
+        <a class="nav-link btn btn-primary text-light" href="/login">Login</a>
+        {% endif %}
     </div>
 </nav>
 
 <!--start of title banner-->
 <div class="jumbotron py-2 p-md-5 text-white rounded" style="background-color:black">
     <div class="col-md-6 pt-3 px-0">
-        <h1 class="display-4 font-italic">Welcome to the Camerata Developments Web Page</h1>
+        <h1 class="display-4 font-italic">Welcome to the <b>Camerata Developments</b> Web Page</h1>
+        <br>
         <p class="lead my-3">We are a small, 4 person development team that have created a new way to experience
-        Rouge-like games for our Capstone project. In addition to the traditional Rouge-like
-        experience, we have implemented online functionality, allowing you to compete against another players
+            Rouge-like games for our Capstone project. In addition to the traditional Rouge-like
+            experience, we have implemented online functionality, allowing you to compete against another players
             in real time. Learn more about the game below.</p>
         <p class="lead mb-0"><a href="/about" class="text-white font-weight-bold">Continue reading...</a></p>
     </div>
@@ -51,6 +73,7 @@
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
             <h1>GameName</h1>
             <h4>Rogue-like Online Multiplayer Game</h4>
+            <br>
             <p class="lead">
                 In this competitive multiplayer Rouge-like, players will be able to challenge each other
                 from any web browser. The traditional rules of a Rouge-like are found here, with a twist.
@@ -68,13 +91,13 @@
             <div class="card border-light bg-dark-gray text-light h-100">
                 <div class="card-body d-flex flex-column align-items-start">
                     <h4 class="card-title font-weight-bold">Enemy Types</h4>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A weak undead enemy indicated by 'S'">Skeleton</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A powerful Orc warrior, indicated by 'O'">Orc</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A deadly cave troll, indicated by 'T'">Troll</a>
                     <br>
                 </div>
@@ -84,17 +107,20 @@
             <div class="card border-light bg-dark-gray text-light h-100">
                 <div class="card-body d-flex flex-column align-items-start">
                     <h4 class="card-title font-weight-bold">Consumables</h4>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A potion that heals for 4 health, indicated by 'g'">Health Potion</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
-                       title="A scroll granting the power to command a lightning strike dealing 20 damage, indicated by a yellow '~'">Lightning Scroll</a>
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                       title="A scroll granting the power to command a lightning strike dealing 20 damage, indicated by a yellow '~'">Lightning
+                        Scroll</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
-                       title="A scroll granting the power to hurl a deadly ball of flame dealing 12 damage to an area, indicated by a red '~'">Fireball Scroll</a>
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                       title="A scroll granting the power to hurl a deadly ball of flame dealing 12 damage to an area, indicated by a red '~'">Fireball
+                        Scroll</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
-                       title="A scroll containing eldritch knowledge that randomizes the target's movements for 10 turns, indicated by a purple '~'">Confusion Scroll</a>
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                       title="A scroll containing eldritch knowledge that randomizes the target's movements for 10 turns, indicated by a purple '~'">Confusion
+                        Scroll</a>
                     <br>
                 </div>
             </div>
@@ -103,20 +129,22 @@
             <div class="card border-light bg-dark-gray text-light h-100 ">
                 <div class="card-body d-flex flex-column align-items-start">
                     <h4 class="card-title font-weight-bold">Equipment</h4>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A small knife increasing power by 1 point when equipped, indicated by '/'">Dagger</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A trusty sword increasing power by 3 points when equipped, indicated by '/'">Sword</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
                        title="A heavy battleaxe increasing power by 5 points when equipped, indicated by '/'">Axe</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
-                       title="Light leather armor increasing defense by 1 point when equipped, indicated by '['">Leather Armor</a>
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                       title="Light leather armor increasing defense by 1 point when equipped, indicated by '['">Leather
+                        Armor</a>
                     <br>
-                    <a href="" class="text-primary" data-toggle="tooltip" data-placement="bottom"
-                       title="Sturdy chainmail armor increasing defense by 3 points when equipped, indicated by '['">Chainmail Armor</a>
+                    <a class="text-primary" data-toggle="tooltip" data-placement="bottom"
+                       title="Sturdy chainmail armor increasing defense by 3 points when equipped, indicated by '['">Chainmail
+                        Armor</a>
                     <br>
                 </div>
             </div>
@@ -134,6 +162,7 @@
             <div class="modal-body">
                 <h4>Public Games:</h4>
                 <p>stuff about public games goes here</p>
+                <br>
                 <h4>Private Games:</h4>
                 <p>stuff abou tprivate games goes here</p>
             </div>
@@ -155,14 +184,17 @@
                     <h4><u>Player Movement:</u></h4>
                     <p>
                         The player can control their character's movement using the arrow keys.
-                        Conversely, the 'H', 'J', 'K', and 'L' keys for left, up, down, and right movements respectfully.
-                        The 'Y' and 'U' keys control left and right upward diagonal movements, and 'B' and 'N' for downward diagonal movements.
+                        Conversely, the 'H', 'J', 'K', and 'L' keys for left, up, down, and right movements
+                        respectfully.
+                        The 'Y' and 'U' keys control left and right upward diagonal movements, and 'B' and 'N' for
+                        downward diagonal movements.
                     </p>
                     <h4><u>Player Actions:</u></h4>
                     <p>
                         To attack an enemy, walk into them.
                         Picking up items off the ground is done by pressing the 'g' key while standing over an item.
-                        The inventory can be opened by pressing the 'i' key, and closed with the 'esc' or any directional key.
+                        The inventory can be opened by pressing the 'i' key, and closed with the 'esc' or any
+                        directional key.
                         Items can be removed from the inventory using the 'd' key.
                         When the stairs to the next level of the dungeon are found, press '>' to descend.
                     </p>
@@ -199,7 +231,8 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <!-- add screenshot 1 -->
-                <img src="{{ url_for('static', filename='GameSS1.png') }}" alt="Game slide 1" style="width:50%; height:50%;">
+                <img src="{{ url_for('static', filename='GameSS1.png') }}" alt="Game slide 1"
+                     style="width:50%; height:50%;">
             </div>
             <!-- add screenshot 2 -->
             <div class="carousel-item">
@@ -245,6 +278,11 @@
         $('[data-toggle="tooltip"]').tooltip();
     });
 
+
+
+
+
+
 </script>
 <script>
     window.addEventListener('scroll', function() {
@@ -259,6 +297,11 @@
             modal.classList.remove('fade-in');
         }
     });
+
+
+
+
+
 
 </script>
 </body>

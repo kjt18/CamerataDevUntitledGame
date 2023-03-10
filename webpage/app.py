@@ -1,22 +1,10 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_mysqldb import MySQL
 
 import bcrypt
 
-# import os
-
-# DOG_FOLDER = os.path.join('static', 'dog_photo')
-
 app = Flask(__name__)
-
-# app.config['UPLOAD_FOLDER'] = DOG_FOLDER
-
-# localhost
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = ''
-# app.config['MYSQL_DB'] = 'flask'
-# mysql = MySQL(app)
+app.secret_key = 'one2three4five6'
 
 # Configure MySQL database
 app.config['MYSQL_USER'] = 'capstonesa'
@@ -24,6 +12,9 @@ app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
 app.config['MYSQL_DB'] = 'capstone'
 app.config['MYSQL_HOST'] = 'capstone-server.mysql.database.azure.com'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+# added to use https
+# app.config['SERVER_NAME'] = 'yourdomain.com'  # replace with your domain name
+app.config['PREFERRED_URL_SCHEME'] = 'https'
 mysql = MySQL(app)
 
 
@@ -72,13 +63,14 @@ def private():
     return render_template('private.html')
 
 
-@app.route('/login', methods=['POST', 'GET'])
-def login():
+@app.route('/register', methods=['POST', 'GET'])
+def register():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('register.html')
 
     username = request.form['username']
     password = request.form['password']
+    session['username'] = username
     hashed_password = encrypt_password(password)
 
     cursor = mysql.connection.cursor()
@@ -86,8 +78,27 @@ def login():
     mysql.connection.commit()
     cursor.close()
 
-    # url = url_for('index', _external=True, _scheme='https')
-    return render_template('game.html')
+    return render_template('index.html')
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    username = request.form['username']
+    password = request.form['password']
+
+    # TODO: Validate user's credentials
+
+    session['username'] = username
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
