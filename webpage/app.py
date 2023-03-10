@@ -1,4 +1,7 @@
-from flask import Flask, render_template
+# from flask import Flask, render_template
+
+from flask import Flask, render_template, request
+from flask_mysqldb import MySQL
 
 # import os
 
@@ -6,8 +9,14 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-
 # app.config['UPLOAD_FOLDER'] = DOG_FOLDER
+
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'flask'
+
+mysql = MySQL(app)
 
 
 @app.route('/')
@@ -41,6 +50,21 @@ def public():
 @app.route('/private')
 def private():
     return render_template('private.html')
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    if request.method == 'POST':
+        name = request.form['username']
+        age = request.form['password']
+        cursor = mysql.connection.cursor()
+        cursor.execute(''' INSERT INTO info_table VALUES(%s,%s)''', (name, age))
+        mysql.connection.commit()
+        cursor.close()
+        return f"Done!!"
 
 
 if __name__ == '__main__':

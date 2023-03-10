@@ -33,6 +33,23 @@
     </div>
 </nav>
 
+
+<div class="container">
+    <h2 class="text-white">Login</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="username" class="text-white">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label for="password" class="text-white">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+
 <footer class="footer bg-light text-center text-dark bottom">
     <div class="container py-3 mb-2">
         <div class="text-center">
