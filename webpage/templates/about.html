@@ -17,21 +17,43 @@
 
 <body style="background-color:black">
 <!--navbar template, change routing to pages-->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color:black">
-    <a class="navbar-brand" href="/">Camerata Developments</a>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav" style="background-color:black">
+    <a class="navbar-brand mr-auto" href="/">Camerata Developments&nbsp;&nbsp;</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
-            <a class="nav-link" href="/about">About</a>
-            <a class="nav-link" href="/game">Game</a>
-            <a class="nav-link disabled">Future Features</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+            </li>
+        </ul>
+        {% if session.username %}
+        <div class="d-flex justify-content-between">
+            <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
+            <form method="post" action="{{ url_for('logout') }}">
+                <button type="submit" class="nav-link btn btn-primary text-light">Logout</button>
+            </form>
         </div>
+        {% else %}
+        <a class="nav-link btn btn-primary text-light" href="/login">Login</a>
+        {% endif %}
     </div>
 </nav>
+
 <header>
     <div class="col-lg-4 mb-4">
         <div class="card h-100 copyable">

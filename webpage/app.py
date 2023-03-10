@@ -95,8 +95,27 @@ def login():
     username = request.form['username']
     password = request.form['password']
 
+    # Check if username exists in the database
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+    user = cur.fetchone()
+    cur.close()
+
+    if user is None:
+        # Add error message and render login page again
+        error = 'Username does not exist'
+        return render_template('login.html', error=error)
+
+    # Verify password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), user['password'].encode('utf-8'))
+    if hashed_password != user['password'].encode('utf-8'):
+        # Add error message and render login page again
+        error = 'Incorrect password'
+        return render_template('login.html', error=error)
+
+    # Set session username and redirect to index
     session['username'] = username
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
