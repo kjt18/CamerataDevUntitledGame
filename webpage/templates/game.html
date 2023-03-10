@@ -54,11 +54,17 @@
         {% endif %}
     </div>
 </nav>
+
+
+
 <div>
     <h1 class="py-5 text-center text-light">
         Game Title goes here
+        <a href="{{ url_for('lobby') }}">Join Lobby</a>
     </h1>
 </div>
+
+
 <div class="container border-light">
     <canvas id="canvas" width="800" height="600"></canvas>
     <script src="{{ url_for('static', filename='game.js') }}"></script>
