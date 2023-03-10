@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_mysqldb import MySQL
-
 import bcrypt
 
 app = Flask(__name__)
@@ -25,42 +24,14 @@ def encrypt_password(password):
 
 
 # Helper function for checking password hash
-
 def check_password(password, hash_value):
-    return bcrypt.checkpw(password.encode('utf-8'), hash_value.encode('utf-8'))
+    return bcrypt.checkpw(password.encode('utf-8'), hash_value)
 
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html')
-
-
-# @app.route('/')
-# @app.route('/index')
-# def show_index():
-#     full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'dog.png', 'dog2.png', 'dog3.png')
-#     return render_template("index.html", user_image=full_filename)
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-
-@app.route('/game')
-def game():
-    return render_template('game.html')
-
-
-@app.route('/public')
-def public():
-    return render_template('public.html')
-
-
-@app.route('/private')
-def private():
-    return render_template('private.html')
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -73,8 +44,21 @@ def register():
     session['username'] = username
     hashed_password = encrypt_password(password)
 
+    # Check if username already exists in the database
     cursor = mysql.connection.cursor()
-    cursor.execute("INSERT INTO accounts (username, phash) VALUES (%s, %s)", (username, hashed_password))
+    cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+    user = cursor.fetchone()
+    cursor.close()
+
+    if user is not None:
+        # Username already exists, add error message and render register page again
+        error = 'Username already exists'
+        return render_template('register.html', error=error)
+
+    # Create new account
+    cursor = mysql.connection.cursor()
+    cursor.execute("INSERT INTO accounts (username, phash) VALUES (%s, %s)",
+                   (username, hashed_password.decode('utf-8')))
     mysql.connection.commit()
     cursor.close()
 
@@ -107,15 +91,35 @@ def login():
         return render_template('login.html', error=error)
 
     # Verify password
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), user['password'].encode('utf-8'))
-    if hashed_password != user['password'].encode('utf-8'):
+    hashed_password = user['phash'].encode('utf-8')
+    if not check_password(password, hashed_password):
         # Add error message and render login page again
         error = 'Incorrect password'
         return render_template('login.html', error=error)
 
     # Set session username and redirect to index
     session['username'] = username
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/game')
+def game():
+    return render_template('game.html')
+
+
+@app.route('/public')
+def public():
+    return render_template('public.html')
+
+
+@app.route('/private')
+def private():
+    return render_template('private.html')
 
 
 if __name__ == '__main__':

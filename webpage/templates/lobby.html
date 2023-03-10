@@ -6,7 +6,7 @@
     <meta name="author" content="Camerata Developments">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Camerata Developments</title>
-    <meta name="description" content="register page">
+    <meta name="description" content="game page">
     <!-- favicon goes here -->
     <!-- <link rel="icon" type="" href=""> -->
     <!--add stylesheets here-->
@@ -15,6 +15,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
 </head>
+
 <body style="background-color:black">
 <!--navbar template, change routing to pages-->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav" style="background-color:black">
@@ -34,56 +35,62 @@
             <li>
                 <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
             </li>
+            <li>
+                <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
             </li>
         </ul>
-    </div>
+        {% if session.username %}
+        <div class="d-flex justify-content-between">
+            <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
+            <form method="post" action="{{ url_for('logout') }}">
+                <button type="submit" class="nav-link btn btn-primary text-light">Logout</button>
+            </form>
+        </div>
+        {% else %}
+        <a class="nav-link btn btn-primary text-light" href="/login">Login</a>
+        {% endif %}
     </div>
 </nav>
 
-
-<section id="cards" class="container py-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2 class="text-white">Register</h2>
-            <br>
-            {% if error %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            {% endif %}
-            <form method="POST" action="{{ url_for('register') }}">
-                <div class="form-group">
-                    <label for="username" class="text-white">Username:</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
-                </div>
-                <div class="form-group">
-                    <label for="password" class="text-white">Password:</label>
-                    <input type="password" class="form-control" id="password" name="password"
-                           placeholder="Enter password">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+<div id="lobby">
+    {% for group, users in groups.items() %}
+        <div class="group">
+            <h3>Group {{ group }}</h3>
+            <ul>
+                {% for user in users %}
+                    <li>{{ user }}</li>
+                {% endfor %}
+            </ul>
         </div>
-    </div>
-</section>
+    {% endfor %}
+</div>
 
+<div class="container border-light">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script src="{{ url_for('static', filename='game.js') }}"></script>
+</div>
 
-<footer class="footer bg-light text-center text-dark bottom">
-    <div class="container py-3 mb-2">
+<footer class="footer bg-dark text-center text-white fixed-bottom">
+    <div class="container py-3">
         <div class="text-center">
-            &copy; 2023 Copyright: <a class="text-dark" href="https://github.com/kjt18/CamerataDevUntitledGame"
+            &copy; 2023 Copyright: <a class="text-white" href="https://github.com/kjt18/CamerataDevUntitledGame"
                                       alt="Camerata Developement's repository">Camerata Developments</a>
-            | add more used resources here
         </div>
     </div>
 </footer>
-
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+</script>
 </body>
 </html>
