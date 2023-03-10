@@ -87,7 +87,7 @@ def login():
     cursor.close()
 
     # url = url_for('index', _external=True, _scheme='https')
-    return f"Done!!"
+    return render_template('game.html')
 
 
 if __name__ == '__main__':
