@@ -1,7 +1,7 @@
-# from flask import Flask, render_template
-
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from flask_mysqldb import MySQL
+
+import bcrypt
 
 # import os
 
@@ -11,12 +11,32 @@ app = Flask(__name__)
 
 # app.config['UPLOAD_FOLDER'] = DOG_FOLDER
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'flask'
+# localhost
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = ''
+# app.config['MYSQL_DB'] = 'flask'
+# mysql = MySQL(app)
 
+# Configure MySQL database
+app.config['MYSQL_USER'] = 'capstonesa'
+app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
+app.config['MYSQL_DB'] = 'capstone'
+app.config['MYSQL_HOST'] = 'capstone-server.mysql.database.azure.com'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
+
+
+def encrypt_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
+
+# Helper function for checking password hash
+
+def check_password(password, hash_value):
+    return bcrypt.checkpw(password.encode('utf-8'), hash_value.encode('utf-8'))
 
 
 @app.route('/')
@@ -57,14 +77,17 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
 
-    if request.method == 'POST':
-        name = request.form['username']
-        age = request.form['password']
-        cursor = mysql.connection.cursor()
-        cursor.execute(''' INSERT INTO info_table VALUES(%s,%s)''', (name, age))
-        mysql.connection.commit()
-        cursor.close()
-        return f"Done!!"
+    username = request.form['username']
+    password = request.form['password']
+    hashed_password = encrypt_password(password)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("INSERT INTO accounts (username, phash) VALUES (%s, %s)", (username, hashed_password))
+    mysql.connection.commit()
+    cursor.close()
+
+    # url = url_for('index', _external=True, _scheme='https')
+    return f"Done!!"
 
 
 if __name__ == '__main__':
