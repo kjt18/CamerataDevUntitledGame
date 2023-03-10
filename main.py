@@ -5,7 +5,6 @@ import sys
 import traceback
 import zerorpc
 import tcod
-from pynput.keyboard import Key, Controller
 
 import color
 from engine import Engine
@@ -20,7 +19,6 @@ class Main:
 
     def __init__(self):
         # random.seed(sys.argv[1])
-        self.keyboard = Controller()
         self.main()
 
     def main(self) -> None:
@@ -93,7 +91,6 @@ class Main:
     def render_console(self):
         self.root_console.clear()
         self.handler.on_render(console=self.root_console)
-        self.context.present(self.root_console)
 
 
 if __name__ == "__main__":
