@@ -76,6 +76,89 @@ class Main:
 
         return self.root_console.__str__()
 
+    def move_down(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_DOWN, tcod.event.K_DOWN, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    def move_left(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_LEFT, tcod.event.K_LEFT, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    def move_right(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_RIGHT, tcod.event.K_RIGHT, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    # todo change keycodes
+    def move_up_left(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_7, tcod.event.K_7, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    # todo change keycodes
+    def move_up_right(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_9, tcod.event.K_9, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    # todo change keycodes
+    def move_down_left(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_1, tcod.event.K_1, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    # todo change keycodes
+    def move_down_right(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_3, tcod.event.K_3, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    def pickup(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_G, tcod.event.K_g, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    def inventory(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_I, tcod.event.K_i, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    # todo check key
+    def descend(self):
+
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_PERIOD, tcod.event.K_PERIOD, tcod.event.Modifier.NONE))
+        self.render_console()
+
+        return self.root_console.__str__()
+
+    def inventory_key(self, key):
+        offset = ord("a") - ord(key)
+        scancode = tcod.event.SCANCODE_A + offset
+        sym = tcod.event.K_a + offset
+
+        self.handle_event(tcod.event.KeyDown(scancode, sym, tcod.event.Modifier.NONE))
+        self.render_console()
+
     def handle_event(self, event):
         try:
             self.context.convert_event(event)
@@ -93,7 +176,12 @@ class Main:
         self.handler.on_render(console=self.root_console)
 
 
-if __name__ == "__main__":
+def start_instance():
     s = zerorpc.Server(Main())
     s.bind("tcp://0.0.0.0:4242")
     s.run()
+
+
+if __name__ == "__main__":
+    start_instance()
+
