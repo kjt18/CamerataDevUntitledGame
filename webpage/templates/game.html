@@ -55,32 +55,64 @@
     </div>
 </nav>
 
-
-
-<div>
+<!--maybe add a list of available lobbies here-->
+<section id="cards" class="container py-4 my-4">
     <h1 class="py-5 text-center text-light">
-        Game Title goes here
-        <a href="{{ url_for('lobby') }}">Join Lobby</a>
+        Welcome to GameTitle Lobby
     </h1>
+    <div class="d-flex my-2">
+        <div class="jumbotron w-100 py-2 mx-auto text-light border-light bg-dark-gray">
+            <h2 class="text-center">
+                Server List
+            </h2>
+        </div>
+    </div>
+</section>
+
+<!--test to join a public lobby-->
+<div class="container">
+    <div class="row mx-auto">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-light bg-dark-gray text-light h-100">
+                <div class="card-body d-flex flex-column align-items-start">
+                    <h4 class="card-title font-weight-bold">Public Lobby</h4>
+                    <button class="btn btn-light btn-hover" onclick="window.location.href='{{ url_for('lobby') }}'">Quick Play</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4 ml-auto">
+            <div class="card border-light bg-dark-gray text-light h-100">
+                <div class="card-body d-flex flex-column align-items-start">
+                    <h4 class="card-title font-weight-bold">Private Lobby</h4>
+                    <button class="btn btn-light btn-hover" onclick="window.location.href='{{ url_for('lobby') }}'">Create Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-<div class="container border-light">
-    <canvas id="canvas" width="800" height="600"></canvas>
-    <script src="{{ url_for('static', filename='game.js') }}"></script>
-</div>
+<!--saving, displays screen to be used to display game-->
+
+<!--<div class="container border-light">-->
+<!--    <canvas id="canvas" width="800" height="600"></canvas>-->
+<!--    <script src="{{ url_for('static', filename='game.js') }}"></script>-->
+<!--</div>-->
 
 <footer class="footer bg-light text-center text-dark bottom">
-  <div class="container py-3 mb-2">
-    <div class="text-center">
-      &copy; 2023 Copyright:
-      <a class="text-dark" href="https://github.com/kjt18/CamerataDevUntitledGame" alt="Camerata Developement's repository">Camerata Developments</a>
-      <br>
-      <a class="text-dark" href="https://bootstrap-flask.readthedocs.io/en/stable/" alt="Bootstrap Flask Documentation">Bootstrap Flask</a>
-      <a class="text-dark" href="https://bootstrap.themes.guide/darkster/" alt="Darkster Theme template">Theme Template</a>
-      | add more used resources here
+    <div class="container py-3 mb-2">
+        <div class="text-center">
+            &copy; 2023 Copyright:
+            <a class="text-dark" href="https://github.com/kjt18/CamerataDevUntitledGame"
+               alt="Camerata Developement's repository">Camerata Developments</a>
+            <br>
+            <a class="text-dark" href="https://bootstrap-flask.readthedocs.io/en/stable/"
+               alt="Bootstrap Flask Documentation">Bootstrap Flask</a>
+            <a class="text-dark" href="https://bootstrap.themes.guide/darkster/" alt="Darkster Theme template">Theme
+                Template</a>
+            | add more used resources here
+        </div>
     </div>
-  </div>
 </footer>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
@@ -91,6 +123,7 @@
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+
 
 </script>
 </body>
