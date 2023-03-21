@@ -100,7 +100,7 @@ class Main:
     # todo change keycodes
     def move_up_left(self):
 
-        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_7, tcod.event.K_7, tcod.event.Modifier.NONE))
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_Y, tcod.event.K_y, tcod.event.Modifier.NONE))
         self.render_console()
 
         return self.root_console.__str__()
@@ -108,7 +108,7 @@ class Main:
     # todo change keycodes
     def move_up_right(self):
 
-        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_9, tcod.event.K_9, tcod.event.Modifier.NONE))
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_U, tcod.event.K_u, tcod.event.Modifier.NONE))
         self.render_console()
 
         return self.root_console.__str__()
@@ -116,7 +116,7 @@ class Main:
     # todo change keycodes
     def move_down_left(self):
 
-        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_1, tcod.event.K_1, tcod.event.Modifier.NONE))
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_B, tcod.event.K_b, tcod.event.Modifier.NONE))
         self.render_console()
 
         return self.root_console.__str__()
@@ -124,7 +124,7 @@ class Main:
     # todo change keycodes
     def move_down_right(self):
 
-        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_KP_3, tcod.event.K_3, tcod.event.Modifier.NONE))
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_N, tcod.event.K_n, tcod.event.Modifier.NONE))
         self.render_console()
 
         return self.root_console.__str__()
