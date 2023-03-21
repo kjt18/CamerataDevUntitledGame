@@ -5,7 +5,7 @@ import bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
-app.secret_key = 'one2three4five6'
+app.secret_key = 'one2three4five6'  # we need to remove this portion of code before deployment, 'security risk'
 socketio = SocketIO(app)
 
 # Configure MySQL database
@@ -155,27 +155,27 @@ def leave(data):
     leave_room(group)
     emit('left', {'username': username}, room=group)
 
-
+# about page route defined here
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-
+# game page defined here
 @app.route('/game')
 def game():
     return render_template('game.html')
 
-
+# currently unused, saving public route for future use
 @app.route('/public')
 def public():
     return render_template('public.html')
 
-
+# currently unused, saving private route for future use
 @app.route('/private')
 def private():
     return render_template('private.html')
 
-
+# saved for testing purposes
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
