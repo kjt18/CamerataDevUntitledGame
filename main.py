@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 import copy
-import random
-import sys
 import traceback
-import zerorpc
 import tcod
-
 import color
-from engine import Engine
+
 import entity_factories
-import exceptions
 import input_handlers
 from procgen import generate_dungeon
 import setup_game
@@ -143,10 +138,9 @@ class Main:
 
         return self.root_console.__str__()
 
-    # todo check key
     def descend(self):
 
-        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_PERIOD, tcod.event.K_PERIOD, tcod.event.Modifier.NONE))
+        self.handle_event(tcod.event.KeyDown(tcod.event.SCANCODE_PERIOD, tcod.event.K_PERIOD, tcod.event.Modifier.SHIFT))
         self.render_console()
 
         return self.root_console.__str__()
@@ -176,10 +170,47 @@ class Main:
         self.handler.on_render(console=self.root_console)
 
 
-def start_instance():
-    s = zerorpc.Server(Main())
+def start_instance(pipe):
+    '''s = zerorpc.Server(Main())
     s.bind("tcp://0.0.0.0:4242")
-    s.run()
+    s.run()'''
+
+    c = Main()
+    while True:
+        console = pipe.recv()
+        if console == "quit":
+            return
+        elif console == "up":
+            pipe.send(c.move_up())
+        elif console == "down":
+            pipe.send(c.move_down())
+        elif console == "left":
+            pipe.send(c.move_left())
+        elif console == "right":
+            pipe.send(c.move_right())
+        elif console == "up left":
+            pipe.send(c.move_up_left())
+        elif console == "up right":
+            pipe.send(c.move_up_right())
+        elif console == "down left":
+            pipe.send(c.move_down_left())
+        elif console == "down right":
+            pipe.send(c.move_down_right())
+        elif console == "pickup":
+            pipe.send(c.pickup())
+        elif console == "descend":
+            pipe.send(c.descend())
+        elif console == "inventory":
+            pipe.send(c.inventory())
+            console = str(input())
+            while True:
+                if len(console) < 1 and ord("a") <= ord(console) <= ord("z"):
+                    pipe.send(c.inventory_key(console))
+                    break
+                else:
+                    pipe.send("input only one lowercase letter")
+        else:
+            pipe.send("invalid input")
 
 
 if __name__ == "__main__":
