@@ -5,9 +5,10 @@ import bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
-app.secret_key = 'one2three4five6'  # we need to remove this portion of code before deployment, 'security risk'
+app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 socketio = SocketIO(app)
 
+# TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 # Configure MySQL database
 app.config['MYSQL_USER'] = 'capstonesa'
 app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
@@ -39,6 +40,7 @@ def index():
     return render_template('index.html')
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the register feature
 # register now goes here
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -71,6 +73,7 @@ def register():
     return render_template('index.html')
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the logout feature
 # logout goes here
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -78,6 +81,7 @@ def logout():
     return redirect(url_for('index'))
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the login feature
 # login goes here
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -176,6 +180,7 @@ def leave(data):
     lobbyid = get_lobby(username)
     leave_room(lobbyid)
     emit('left', {'username': username}, room=lobbyid)
+    return render_template('game.html')
 
 
 def get_lobby(username):
