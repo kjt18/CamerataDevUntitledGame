@@ -5,9 +5,10 @@ import bcrypt
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
-app.secret_key = 'one2three4five6'  # we need to remove this portion of code before deployment, 'security risk'
+app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 socketio = SocketIO(app)
 
+# TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 # Configure MySQL database
 app.config['MYSQL_USER'] = 'capstonesa'
 app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
@@ -18,17 +19,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # app.config['SERVER_NAME'] = 'yourdomain.com'  # replace with your domain name
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 mysql = MySQL(app)
-
-# Define lobby dictionary to keep track of users and their groups
-groups = {}
-
-
-# Define helper function to get the group number of a user
-def get_group(username):
-    for group in groups:
-        if username in groups[group]:
-            return group
-    return None
 
 
 def encrypt_password(password):
@@ -42,12 +32,15 @@ def check_password(password, hash_value):
     return bcrypt.checkpw(password.encode('utf-8'), hash_value)
 
 
+# Define function to start a new instance
+
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html')
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the register feature
 # register now goes here
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -80,6 +73,7 @@ def register():
     return render_template('index.html')
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the logout feature
 # logout goes here
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -87,6 +81,7 @@ def logout():
     return redirect(url_for('index'))
 
 
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the login feature
 # login goes here
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -120,65 +115,128 @@ def login():
 
 
 # lobby goes here
+# Define the method for getting users in a lobby
+def get_users_in_lobby(lobbyid):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT username FROM lobby_members WHERE lobbyid = %s', (lobbyid,))
+    users = [row[0] for row in cur.fetchall()]
+    cur.close()
+    return users
+
+
+# Define the Flask route for the lobby page
 @app.route('/lobby')
 def lobby():
     # Check if user is logged in
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    # Get user's group or create a new group if user is not in any group
+    # Get user's lobbyid or create a new lobby if user is not in any lobby
     username = session['username']
-    group = get_group(username)
-    if group is None:
-        group = len(groups) + 1
-        groups[group] = [username]
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
+    row = cur.fetchone()
+    if row is not None:
+        lobbyid = row['lobbyid']
+    else:
+        # Insert a new row into the lobby table and get the auto-generated id
+        cur.execute('INSERT INTO lobby (owner) VALUES (%s)', (username,))
+        mysql.connection.commit()
+        lobbyid = cur.lastrowid
+    cur.close()
 
-    # Render lobby page with group number and list of users in the same group
-    return render_template('lobby.html', group=group, users=groups[group])
+    # Get the list of users in the lobby
+    users = get_users_in_lobby(lobbyid)
+
+    # Render lobby page with lobbyid and list of users in the same lobby
+    return render_template('lobby.html', lobbyid=lobbyid, users=users)
 
 
 # Define SocketIO event handlers
 @socketio.on('join')
 def join(data):
-    # Join a SocketIO room corresponding to the user's group
+    # Join a SocketIO room corresponding to the user's lobbyid
     username = session['username']
-    group = get_group(username)
-    join_room(group)
-    emit('joined', {'username': username}, room=group)
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
+    row = cursor.fetchone()
+    if row is not None:
+        lobbyid = row[0]
+    else:
+        # Create a new lobby if user is not in any lobby
+        cursor.execute('INSERT INTO lobby (owner) VALUES (%s)', (username,))
+        mysql.connection.commit()
+        lobbyid = cursor.lastrowid
+    cursor.close()
+
+    join_room(lobbyid)
+    emit('joined', {'username': username}, room=lobbyid)
 
 
 @socketio.on('leave')
 def leave(data):
-    # Leave the SocketIO room corresponding to the user's group
+    # Leave the SocketIO room corresponding to the user's lobbyid
     username = session['username']
-    group = get_group(username)
-    leave_room(group)
-    emit('left', {'username': username}, room=group)
+    lobbyid = get_lobby(username)
+    leave_room(lobbyid)
+    emit('left', {'username': username}, room=lobbyid)
+    return render_template('game.html')
+
+
+def get_lobby(username):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
+    lobbyid = cur.fetchone()
+    cur.close()
+    if lobbyid:
+        return lobbyid[0]
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT lobbyid FROM lobby_members WHERE username = %s', (username,))
+        lobbyid = cur.fetchone()
+        cur.close()
+        if lobbyid:
+            return lobbyid[0]
+        else:
+            return None
+
 
 # about page route defined here
 @app.route('/about')
 def about():
     return render_template('about.html')
 
+
 # game page defined here
 @app.route('/game')
 def game():
-    return render_template('game.html')
+    lobbyid = session.get('lobbyid')
+    cur = mysql.connection.cursor()
+    # cur.execute('SELECT lobbyid, owner, game_type, num_players FROM lobby WHERE lobbyid = %s', (lobbyid,))
+    # cur.execute('SELECT lobbyid, owner, num_players FROM lobby WHERE lobbyid = %s', (lobbyid,))
+    cur.execute('SELECT lobbyid, owner FROM lobby WHERE lobbyid = %s', (lobbyid,))
+    lobby = cur.fetchone()
+    cur.close()
+    return render_template('game.html', lobby=lobby)
+
 
 # currently unused, saving public route for future use
 @app.route('/public')
 def public():
     return render_template('public.html')
 
+
 # currently unused, saving private route for future use
 @app.route('/private')
 def private():
     return render_template('private.html')
+
 
 # saved for testing purposes
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
 # Start the app
+
 if __name__ == '__main__':
     socketio.run(app)
