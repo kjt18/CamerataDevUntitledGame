@@ -11,9 +11,12 @@ mysql = "*"
 mysql-connector-python = "*"
 pytest = "*"
 bcrypt = "*"
+#python-socketio = "*"
+flask-socketio = "*"
+flask-mysqldb = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
-python_full_version = "3.10.7"
+python_version = "3.11"
+python_full_version = "3.11.2"
