@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from tcod.console import Console
 from tcod.map import compute_fov
 
@@ -15,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class Engine:
-
     game_map: GameMap
     game_world: GameWorld
 
@@ -23,6 +23,10 @@ class Engine:
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
+        self.point_counter = 0
+        self.num_explored = 0
+        self.num_turns = 0
+        self.total_points = 0
 
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.actors) - {self.player}:
@@ -41,6 +45,7 @@ class Engine:
         )
         # If a tile is "visible" it should be added to "explored".
         self.game_map.explored |= self.game_map.visible
+        self.num_explored = np.count_nonzero(self.game_map.explored)
 
     def render(self, console: Console) -> None:
         self.game_map.render(console)
@@ -60,7 +65,32 @@ class Engine:
             location=(0, 47),
         )
 
+        render_functions.render_points(
+            console=console,
+            points=self.get_points(),
+            location=(0, 49)
+        )
         render_functions.render_names_at_mouse_location(
             console=console, x=21, y=44, engine=self
         )
+
+    def turns_taken(self):
+        self.num_turns += 1
+
+    def award_points(self, points: int) -> None:
+        self.point_counter += points
+
+    def get_points(self) -> int:
+        return self.point_counter + self.num_explored
+
+    def total_points_in_level(self) ->None:
+        turn_bonus = 500 - self.num_turns
+        if turn_bonus > 0:
+            self.total_points = self.get_points() + turn_bonus
+            self.message_log.add_message(f"Level completed in {self.num_turns} turns. You earned {turn_bonus} bonus points!")
+        else:
+            self.total_points = self.get_points()
+            self.message_log.add_message(f"Level completed in {self.num_turns} turns. Complete the level in less "
+                                         f"turns for bonus points!")
+        self.point_counter = 0
 

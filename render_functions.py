@@ -48,7 +48,15 @@ def render_dungeon_level(
 
     console.print(x=x, y=y, string=f"Dungeon level: {dungeon_level}")
 
+def render_points(
+        console: Console, points: int, location: Tuple[int, int]
+) -> None:
+    """
+    Render the amount of points the player has earned.
+    """
+    x, y = location
 
+    console.print(x=x, y=y, string=f"Points: {points}")
 def render_names_at_mouse_location(
         console: Console, x: int, y: int, engine: Engine
 ) -> None:

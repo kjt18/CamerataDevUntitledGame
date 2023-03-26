@@ -25,17 +25,9 @@ class Entity:
 
     parent: Union[GameMap, Inventory]
 
-    def __init__(
-            self,
-            parent: Optional[GameMap] = None,
-            x: int = 0,
-            y: int = 0,
-            char: str = "?",
-            color: Tuple[int, int, int] = (255, 255, 255),
-            name: str = "<Unnamed>",
-            blocks_movement: bool = False,
-            render_order: RenderOrder = RenderOrder.CORPSE,
-    ):
+    def __init__(self, parent: Optional[GameMap] = None, x: int = 0, y: int = 0, char: str = "?",
+                 color: Tuple[int, int, int] = (255, 255, 255), name: str = "<Unnamed>", blocks_movement: bool = False,
+                 render_order: RenderOrder = RenderOrder.CORPSE, points=0):
         self.x = x
         self.y = y
         self.char = char
@@ -43,6 +35,7 @@ class Entity:
         self.name = name
         self.blocks_movement = blocks_movement
         self.render_order = render_order
+        self.points = points
         if parent:
             # If parent isn't provided now then it will be set later.
             self.parent = parent
@@ -97,6 +90,7 @@ class Actor(Entity):
             equipment: Equipment,
             fighter: Fighter,
             inventory: Inventory,
+            points: int = 0,
     ) -> object:
         super().__init__(
             x=x,
@@ -106,8 +100,10 @@ class Actor(Entity):
             name=name,
             blocks_movement=True,
             render_order=RenderOrder.ACTOR,
+            points=0,
         )
 
+        self.points = points
         self.ai: Optional[BaseAI] = ai_cls(self)
 
         self.equipment: Equipment = equipment
@@ -137,16 +133,10 @@ class Item(Entity):
             # consumable: Consumable,
             consumable: Optional[Consumable] = None,
             equippable: Optional[Equippable] = None,
+            points: int = 0,
     ) -> object:
-        super().__init__(
-            x=x,
-            y=y,
-            char=char,
-            color=color,
-            name=name,
-            blocks_movement=False,
-            render_order=RenderOrder.ITEM,
-        )
+        super().__init__(x=x, y=y, char=char, color=color, name=name, blocks_movement=False,
+                         render_order=RenderOrder.ITEM, points=0)
 
         self.consumable = consumable
         if self.consumable:
@@ -156,3 +146,4 @@ class Item(Entity):
 
         if self.equippable:
             self.equippable.parent = self
+        self.points = points

@@ -118,6 +118,9 @@ class EventHandler(BaseEventHandler):
         self.engine.handle_enemy_turns()
 
         self.engine.update_fov()
+
+        self.engine.turns_taken()
+
         return True
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
