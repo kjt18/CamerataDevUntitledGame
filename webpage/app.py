@@ -114,93 +114,6 @@ def login():
     return redirect(url_for('index'))
 
 
-# lobby goes here
-# Define the method for getting users in a lobby
-def get_users_in_lobby(lobbyid):
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT username FROM lobby_members WHERE lobbyid = %s', (lobbyid,))
-    users = [row[0] for row in cur.fetchall()]
-    cur.close()
-    return users
-
-
-# Define the Flask route for the lobby page
-@app.route('/lobby')
-def lobby():
-    # Check if user is logged in
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
-    # Get user's lobbyid or create a new lobby if user is not in any lobby
-    username = session['username']
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
-    row = cur.fetchone()
-    if row is not None:
-        lobbyid = row['lobbyid']
-    else:
-        # Insert a new row into the lobby table and get the auto-generated id
-        cur.execute('INSERT INTO lobby (owner) VALUES (%s)', (username,))
-        mysql.connection.commit()
-        lobbyid = cur.lastrowid
-    cur.close()
-
-    # Get the list of users in the lobby
-    users = get_users_in_lobby(lobbyid)
-
-    # Render lobby page with lobbyid and list of users in the same lobby
-    return render_template('lobby.html', lobbyid=lobbyid, users=users)
-
-
-# Define SocketIO event handlers
-@socketio.on('join')
-def join(data):
-    # Join a SocketIO room corresponding to the user's lobbyid
-    username = session['username']
-    cursor = mysql.connection.cursor()
-    cursor.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
-    row = cursor.fetchone()
-    if row is not None:
-        lobbyid = row[0]
-    else:
-        # Create a new lobby if user is not in any lobby
-        cursor.execute('INSERT INTO lobby (owner) VALUES (%s)', (username,))
-        mysql.connection.commit()
-        lobbyid = cursor.lastrowid
-    cursor.close()
-
-    join_room(lobbyid)
-    emit('joined', {'username': username}, room=lobbyid)
-
-
-@socketio.on('leave')
-def leave(data):
-    # Leave the SocketIO room corresponding to the user's lobbyid
-    username = session['username']
-    lobbyid = get_lobby(username)
-    leave_room(lobbyid)
-    emit('left', {'username': username}, room=lobbyid)
-    return render_template('game.html')
-
-
-def get_lobby(username):
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT lobbyid FROM lobby WHERE owner = %s', (username,))
-    lobbyid = cur.fetchone()
-    cur.close()
-    if lobbyid:
-        return lobbyid[0]
-    else:
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT lobbyid FROM lobby_members WHERE username = %s', (username,))
-        lobbyid = cur.fetchone()
-        cur.close()
-        if lobbyid:
-            return lobbyid[0]
-        else:
-            return None
-
-
 # about page route defined here
 @app.route('/about')
 def about():
@@ -210,14 +123,41 @@ def about():
 # game page defined here
 @app.route('/game')
 def game():
-    lobbyid = session.get('lobbyid')
+    lobby_id = session.get('id')
+    # owner_id = session.get('owner_id')
     cur = mysql.connection.cursor()
-    # cur.execute('SELECT lobbyid, owner, game_type, num_players FROM lobby WHERE lobbyid = %s', (lobbyid,))
-    # cur.execute('SELECT lobbyid, owner, num_players FROM lobby WHERE lobbyid = %s', (lobbyid,))
-    cur.execute('SELECT lobbyid, owner FROM lobby WHERE lobbyid = %s', (lobbyid,))
+    cur.execute('SELECT id FROM lobby WHERE id = %s', (lobby_id,))
     lobby = cur.fetchone()
+    cur.execute('SELECT id FROM lobby')
+    lobbies = cur.fetchall()
     cur.close()
-    return render_template('game.html', lobby=lobby)
+    return render_template('game.html', lobby=lobby, lobbies=lobbies)
+
+
+@app.route('/lobby')
+def lobby():
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM lobby')
+    lobbies = cur.fetchall()
+    cur.close()
+    return render_template('lobby.html', lobbies=lobbies)
+
+
+@app.route('/create_lobby', methods=['GET', 'POST'])
+def create_lobby():
+    if request.method == 'POST':
+        lobby_name = request.form['lobby_name']
+        owner_name = request.form['owner_name']
+        game_type = request.form['game_type']
+        num_players = request.form['num_players']
+
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO lobby (lobby_name, owner_name, game_type, num_players) VALUES (%s, %s, %s, %s)',
+                    (lobby_name, owner_name, game_type, num_players))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('lobby'))
+    return render_template('create_lobby.html')
 
 
 # currently unused, saving public route for future use
@@ -240,7 +180,6 @@ def private():
 # save for now, pycharm UI doesn't like this very much.
 # if __name__ == '__main__':
 #     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
-# if __name__ == '__main__':
-#     socketio.run(app, host="127.0.0.1", port=5000)
+
 if __name__ == '__main__':
     socketio.run(app, host="127.0.0.1", port=5000)

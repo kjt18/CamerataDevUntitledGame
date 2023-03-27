@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Camerata Developments">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Camerata Developments</title>
+    <meta name="description" content="game page">
+    <!-- favicon goes here -->
+    <!-- <link rel="icon" type="" href=""> -->
+    <!--add stylesheets here-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
+</head>
+<body style="background-color:black">
+{% block content %}
+<h1>Create a New Lobby</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="lobby_name">Lobby Name:</label>
+        <input type="text" class="form-control" id="lobby_name" name="lobby_name" required>
+    </div>
+    <div class="form-group">
+        <label for="owner_name">Owner Name:</label>
+        <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+    </div>
+    <div class="form-group">
+        <label for="game_type">Game Type:</label>
+        <input type="text" class="form-control" id="game_type" name="game_type" required>
+    </div>
+    <div class="form-group">
+        <label for="num_players">Number of Players:</label>
+        <input type="number" class="form-control" id="num_players" name="num_players" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Lobby</button>
+</form>
+{% endblock %}
+</body>
+</html>

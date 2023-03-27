@@ -54,27 +54,51 @@
         {% endif %}
     </div>
 </nav>
-
 <!--maybe add a list of available lobbies here-->
-<section id="cards" class="container py-4 my-4">
-    <h1 class="py-5 text-center text-light">
-        Welcome to GameTitle Lobby
-    </h1>
-    <div class="d-flex my-2">
-        <div class="jumbotron w-100 py-2 mx-auto text-light border-light bg-dark-gray">
-            <h2 class="text-center">
-                Server List
-                <p>Your lobby ID is: {{ lobby.lobbyid }}</p>
-    <p>Other lobby details:</p>
-    <ul>
-        <li>Owner: {{ lobby.owner }}</li>
-<!--        <li>Game type: {{ lobby.game_type }}</li>-->
-<!--        <li>Number of players: {{ lobby.num_players }}</li>-->
-    </ul>
-            </h2>
+
+<!--<div class="lobby-list">-->
+<!--  {% block content %}-->
+
+<!--    <h1>Available Lobbies</h1>-->
+
+<!--    <table class="table table-striped">-->
+<!--      <thead>-->
+<!--        <tr>-->
+<!--          <th>Lobby Name</th>-->
+<!--          <th>Owner Name</th>-->
+<!--          <th>Game Type</th>-->
+<!--          <th>Number of Players</th>-->
+<!--        </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--        {% for lobby in lobbies %}-->
+<!--          <tr>-->
+<!--            <td>{{ lobby.lobby_name }}</td>-->
+<!--            <td>{{ lobby.owner_name }}</td>-->
+<!--            <td>{{ lobby.game_type }}</td>-->
+<!--            <td>{{ lobby.num_players }}</td>-->
+<!--          </tr>-->
+<!--        {% endfor %}-->
+<!--      </tbody>-->
+<!--    </table>-->
+
+<!--  {% endblock %}-->
+<!--</div>-->
+<div class="container my-5">
+    <h1> Server list:</h1>
+    {% for lobby in lobbies %}
+    <div class="card my-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ lobby.lobby_name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Owner: {{ lobby.owner_name }}</h6>
+            <p class="card-text">Game Type: {{ lobby.game_type }}</p>
+            <p class="card-text">Number of Players: {{ lobby.num_players }}</p>
         </div>
     </div>
-</section>
+    {% endfor %}
+</div>
+
+
 
 <!--test to join a public lobby-->
 <div class="container">
@@ -84,8 +108,8 @@
                 <div class="card-body d-flex flex-column align-items-start">
                     <h4 class="card-title font-weight-bold">Public Lobby</h4>
                     <p>add description of public games and quick play feature</p>
-                    <button class="btn btn-light btn-hover" onclick="window.location.href='{{ url_for('lobby') }}'">
-                        Quick Play
+                    <button class="btn btn-light btn-hover" onclick="window.location.href='{{ url_for('create_lobby') }}'">
+                        Create Public Lobby
                     </button>
                 </div>
             </div>
@@ -104,14 +128,6 @@
     </div>
 </div>
 
-
-<!--saving, displays screen to be used to display game-->
-
-<!--<div class="container border-light">-->
-<!--    <canvas id="canvas" width="800" height="600"></canvas>-->
-<!--    <script src="{{ url_for('static', filename='game.js') }}"></script>-->
-<!--</div>-->
-
 <footer class="footer bg-light text-center text-dark bottom">
     <div class="container py-3 mb-2">
         <div class="text-center">
@@ -129,6 +145,16 @@
         </div>
     </div>
 </footer>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -138,6 +164,9 @@
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+
+
 
 
 
