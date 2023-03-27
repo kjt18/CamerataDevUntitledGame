@@ -54,40 +54,13 @@
         {% endif %}
     </div>
 </nav>
-<!--maybe add a list of available lobbies here-->
 
-<!--<div class="lobby-list">-->
-<!--  {% block content %}-->
-
-<!--    <h1>Available Lobbies</h1>-->
-
-<!--    <table class="table table-striped">-->
-<!--      <thead>-->
-<!--        <tr>-->
-<!--          <th>Lobby Name</th>-->
-<!--          <th>Owner Name</th>-->
-<!--          <th>Game Type</th>-->
-<!--          <th>Number of Players</th>-->
-<!--        </tr>-->
-<!--      </thead>-->
-<!--      <tbody>-->
-<!--        {% for lobby in lobbies %}-->
-<!--          <tr>-->
-<!--            <td>{{ lobby.lobby_name }}</td>-->
-<!--            <td>{{ lobby.owner_name }}</td>-->
-<!--            <td>{{ lobby.game_type }}</td>-->
-<!--            <td>{{ lobby.num_players }}</td>-->
-<!--          </tr>-->
-<!--        {% endfor %}-->
-<!--      </tbody>-->
-<!--    </table>-->
-
-<!--  {% endblock %}-->
-<!--</div>-->
-<div class="container my-5">
-    <h1> Server list:</h1>
+<div class="container my-5 py-5 mx-auto text-light">
+    <div class="text-center">
+        <h1> Server list:</h1>
+    </div>
     {% for lobby in lobbies %}
-    <div class="card my-3">
+    <div class="card my-3 border-light bg-dark-gray">
         <div class="card-body">
             <h5 class="card-title">{{ lobby.lobby_name }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">Owner: {{ lobby.owner_name }}</h6>
@@ -97,6 +70,22 @@
     </div>
     {% endfor %}
 </div>
+<!--to be used to create clickable/joinable lobbies based on lobby_id-->
+<!--<div class="container my-5 py-5 mx-auto text-light">-->
+<!--    <div class="text-center">-->
+<!--        <h1> Server list:</h1>-->
+<!--    </div>-->
+<!--    {% for lobby in lobbies %}-->
+<!--    <a href="{{ url_for('join_lobby', lobby_id=lobby.id) }}" class="card my-3 border-light bg-dark-gray">-->
+<!--        <div class="card-body">-->
+<!--            <h5 class="card-title">{{ lobby.lobby_name }}</h5>-->
+<!--            <h6 class="card-subtitle mb-2 text-muted">Owner: {{ lobby.owner_name }}</h6>-->
+<!--            <p class="card-text">Game Type: {{ lobby.game_type }}</p>-->
+<!--            <p class="card-text">Number of Players: {{ lobby.num_players }}</p>-->
+<!--        </div>-->
+<!--    </a>-->
+<!--    {% endfor %}-->
+<!--</div>-->
 
 
 

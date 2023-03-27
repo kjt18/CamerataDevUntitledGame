@@ -54,20 +54,98 @@
         {% endif %}
     </div>
 </nav>
-
-<div class="container my-5">
-    <h1> Server list:</h1>
-    {% for lobby in lobbies %}
-    <div class="card my-3">
-        <div class="card-body">
-            <h5 class="card-title">{{ lobby.lobby_name }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Owner: {{ lobby.owner_name }}</h6>
-            <p class="card-text">Game Type: {{ lobby.game_type }}</p>
-            <p class="card-text">Number of Players: {{ lobby.num_players }}</p>
-        </div>
+<section id="cards" class="container py-4 my-4 text-light">
+    <h1 class="py-5 text-center">
+        Lobby {{ lobby_name }}</h1>
     </div>
-    {% endfor %}
-</div>
+    <h2>Users:</h2>
+    <ul>
+        <!--        {% for user in users %}-->
+        <!--        <li>{{ username }}</li>-->
+        <!--        {% endfor %}-->
+        <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
+    </ul>
+    <!--saving, displays screen to be used to display game-->
+    <div class="container border-light">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <script src="{{ url_for('static', filename='app.js') }}"></script>
+    </div>
+    <h2>Chat</h2>
+    <div id="messages"></div>
+    <form id="message-form" action="">
+        <input type="text" id="message-input">
+        <!-- Button to send message via SocketIO -->
+        <button id="send-button" class="btn btn-primary">Send</button>
+    </form>
+
+    <!-- Button to leave SocketIO room -->
+    <button id="leave-button" class="btn btn-primary">Leave</button>
+</section>
+
+<script>
+        // Connect to SocketIO server
+        const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        // Add event listener for the 'connect' event
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+        // Add event listener for the 'joined' event
+        socket.on('joined', function(data) {
+            console.log(data.username + ' joined the lobby');
+        });
+
+        // initialize leave button
+        const leaveButton = document.getElementById('leave-button');
+
+        leaveButton.addEventListener('click', function() {
+          socket.emit('left', {username: 'session.username'});
+        });
+
+        socket.on('left', function(data) {
+          console.log(data.username + ' left the lobby');
+          // Perform any necessary actions here
+        });
+
+        socket.on('disconnect', function() {
+          console.log('Disconnected from server');
+        });
+
+        // Add event listener for the 'message' event
+        socket.on('message', function(data) {
+            console.log(data.username + ': ' + data.message);
+            var message = $('<div class="message"></div>').text(data.username + ': ' + data.message);
+            $('#messages').append(message);
+        });
+
+        // Add event listener for the 'disconnect' event
+        socket.on('disconnect', function() {
+            console.log('Disconnected from server');
+        });
+
+        // Add event listener for the 'submit' event on the message form
+        $('#message-form').on('submit', function(event) {
+            event.preventDefault();
+            var message = $('#message-input').val();
+            $('#message-input').val('');
+            socket.emit('message', {'message': message});
+        });
+        // Add event listener for join button
+        const joinButton = document.getElementById('join-button');
+        joinButton.addEventListener('click', function() {
+            socket.emit('join', {username: 'session.username'}); // Replace 'YourUsername' with the actual username
+        });
+
+        // Add event listener for send button
+        const sendButton = document.getElementById('send-button');
+        sendButton.addEventListener('click', function() {
+            var message = $('#message-input').val();
+            $('#message-input').val('');
+            socket.emit('message', {'message': message});
+        });
+
+</script>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

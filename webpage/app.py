@@ -123,15 +123,20 @@ def about():
 # game page defined here
 @app.route('/game')
 def game():
-    lobby_id = session.get('id')
-    # owner_id = session.get('owner_id')
     cur = mysql.connection.cursor()
-    cur.execute('SELECT id FROM lobby WHERE id = %s', (lobby_id,))
-    lobby = cur.fetchone()
-    cur.execute('SELECT id FROM lobby')
+    cur.execute('SELECT * FROM lobby')
     lobbies = cur.fetchall()
     cur.close()
-    return render_template('game.html', lobby=lobby, lobbies=lobbies)
+    return render_template('game.html', lobbies=lobbies)
+    # lobby_id = session.get('id')
+    # # owner_id = session.get('owner_id')
+    # cur = mysql.connection.cursor()
+    # cur.execute('SELECT id FROM lobby WHERE id = %s', (lobby_id,))
+    # lobby = cur.fetchone()
+    # cur.execute('SELECT id FROM lobby')
+    # lobbies = cur.fetchall()
+    # cur.close()
+    # return render_template('game.html', lobby=lobby, lobbies=lobbies)
 
 
 @app.route('/lobby')
@@ -158,6 +163,12 @@ def create_lobby():
         cur.close()
         return redirect(url_for('lobby'))
     return render_template('create_lobby.html')
+
+# join lobby feature, commented out for now.
+# @app.route('/join_lobby/<int:lobby_id>')
+# def join_lobby(lobby_id):
+#     # code to join the lobby with the given lobby_id
+#     return redirect(url_for('lobby_details', lobby_id=lobby_id))
 
 
 # currently unused, saving public route for future use
