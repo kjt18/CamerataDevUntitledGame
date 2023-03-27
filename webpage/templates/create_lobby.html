@@ -16,27 +16,31 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
 </head>
 <body style="background-color:black">
-{% block content %}
-<h1>Create a New Lobby</h1>
-<form method="POST">
-    <div class="form-group">
-        <label for="lobby_name">Lobby Name:</label>
-        <input type="text" class="form-control" id="lobby_name" name="lobby_name" required>
+<section id="cards" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2 class="text-white">Create a New Lobby</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="lobby_name">Lobby Name:</label>
+                    <input type="text" class="form-control" id="lobby_name" name="lobby_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="owner_name">Owner Name:</label>
+                    <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="game_type">Game Type:</label>
+                    <input type="text" class="form-control" id="game_type" name="game_type" required>
+                </div>
+                <div class="form-group">
+                    <label for="num_players">Number of Players:</label>
+                    <input type="number" class="form-control" id="num_players" name="num_players" required>
+                </div>
+                <button type="submit" class="btn btn-light">Create Lobby</button>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="owner_name">Owner Name:</label>
-        <input type="text" class="form-control" id="owner_name" name="owner_name" required>
-    </div>
-    <div class="form-group">
-        <label for="game_type">Game Type:</label>
-        <input type="text" class="form-control" id="game_type" name="game_type" required>
-    </div>
-    <div class="form-group">
-        <label for="num_players">Number of Players:</label>
-        <input type="number" class="form-control" id="num_players" name="num_players" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Create Lobby</button>
-</form>
-{% endblock %}
+</section>
 </body>
 </html>

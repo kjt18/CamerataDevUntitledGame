@@ -57,7 +57,7 @@
 
 <div class="container my-5 py-5 mx-auto text-light">
     <div class="text-center">
-        <h1> Server list:</h1>
+        <h1> Active Lobbies</h1>
     </div>
     {% for lobby in lobbies %}
     <div class="card my-3 border-light bg-dark-gray">
@@ -70,23 +70,6 @@
     </div>
     {% endfor %}
 </div>
-<!--to be used to create clickable/joinable lobbies based on lobby_id-->
-<!--<div class="container my-5 py-5 mx-auto text-light">-->
-<!--    <div class="text-center">-->
-<!--        <h1> Server list:</h1>-->
-<!--    </div>-->
-<!--    {% for lobby in lobbies %}-->
-<!--    <a href="{{ url_for('join_lobby', lobby_id=lobby.id) }}" class="card my-3 border-light bg-dark-gray">-->
-<!--        <div class="card-body">-->
-<!--            <h5 class="card-title">{{ lobby.lobby_name }}</h5>-->
-<!--            <h6 class="card-subtitle mb-2 text-muted">Owner: {{ lobby.owner_name }}</h6>-->
-<!--            <p class="card-text">Game Type: {{ lobby.game_type }}</p>-->
-<!--            <p class="card-text">Number of Players: {{ lobby.num_players }}</p>-->
-<!--        </div>-->
-<!--    </a>-->
-<!--    {% endfor %}-->
-<!--</div>-->
-
 
 
 <!--test to join a public lobby-->

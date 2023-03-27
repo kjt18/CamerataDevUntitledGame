@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, session, redirect, url_for
-from flask_mysqldb import MySQL
 import bcrypt
-
+from flask import Flask, render_template, session, request
+from flask import redirect, url_for
+from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
@@ -120,7 +120,7 @@ def about():
     return render_template('about.html')
 
 
-# game page defined here
+# game page defined here, displays active lobbies
 @app.route('/game')
 def game():
     cur = mysql.connection.cursor()
@@ -139,6 +139,7 @@ def game():
     # return render_template('game.html', lobby=lobby, lobbies=lobbies)
 
 
+# lobby page, currently only displays created lobbies
 @app.route('/lobby')
 def lobby():
     cur = mysql.connection.cursor()
@@ -148,6 +149,8 @@ def lobby():
     return render_template('lobby.html', lobbies=lobbies)
 
 
+# uses mysql db to create lobby.
+# TODO: implement joining and removal of users
 @app.route('/create_lobby', methods=['GET', 'POST'])
 def create_lobby():
     if request.method == 'POST':
@@ -155,20 +158,88 @@ def create_lobby():
         owner_name = request.form['owner_name']
         game_type = request.form['game_type']
         num_players = request.form['num_players']
+        # lobby_players = request.form['lobby_players']
 
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO lobby (lobby_name, owner_name, game_type, num_players) VALUES (%s, %s, %s, %s)',
-                    (lobby_name, owner_name, game_type, num_players))
+        cur.execute(
+            'INSERT INTO lobby (lobby_name, owner_name, game_type, num_players) VALUES (%s, %s, %s, %s)',
+            (lobby_name, owner_name, game_type, num_players))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('lobby'))
     return render_template('create_lobby.html')
 
-# join lobby feature, commented out for now.
-# @app.route('/join_lobby/<int:lobby_id>')
-# def join_lobby(lobby_id):
-#     # code to join the lobby with the given lobby_id
-#     return redirect(url_for('lobby_details', lobby_id=lobby_id))
+
+@socketio.on('join')
+def handle_join(data):
+    lobby_id = data['lobby_id']
+    username = data['username']
+    cur = mysql.connection.cursor()
+    cur.execute('INSERT INTO lobby_players (lobby_id, username) VALUES (%s, %s)', (lobby_id, username))
+    mysql.connection.commit()
+    cur.close()
+    emit('user_join', {'lobby_id': lobby_id, 'username': username}, broadcast=True)
+
+
+# handler for when user leaves lobby
+@socketio.on('leave')
+def handle_leave(data):
+    lobby_id = data['lobby_id']
+    username = data['username']
+    cur = mysql.connection.cursor()
+    cur.execute('DELETE FROM lobby_players WHERE lobby_id = %s AND username = %s', (lobby_id, username))
+    mysql.connection.commit()
+    cur.close()
+    emit('user_leave', {'lobby_id': lobby_id, 'username': username}, broadcast=True)
+
+# TODO: need to figure out how to get into specific lobby to join/leave
+# @app.route('/leave_lobby/<int:lobby_id>', methods=['POST'])
+# def leave_lobby(lobby_id):
+#     username = request.form['username']
+#     cur = mysql.connection.cursor()
+#     cur.execute('DELETE FROM lobby_players WHERE lobby_id = %s AND username = %s', (lobby_id, username))
+#     mysql.connection.commit()
+#     cur.close()
+#     return redirect(url_for('lobby'))
+
+
+# current implementation for lobby feature
+# handles when user connects to lobby
+@socketio.on('connect')
+def on_connect():
+    print('Connected to server')
+    emit('joined', {'username': session['username']}, broadcast=True)
+
+
+# handles user interaction when user joins lobby
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    session['username'] = username
+    join_room('lobby')
+    emit('joined', {'username': username}, broadcast=True)
+
+
+# handles user interaction when user leaves lobby
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    session.pop('username', None)
+    leave_room('lobby')
+    emit('left', {'username': username}, broadcast=True)
+
+
+# handles messages being sent and displayed
+@socketio.on('message')
+def handle_message(data):
+    username = session['username']
+    message = data['message']
+    emit('message', {'username': username, 'message': message}, room='lobby')
+
+
+@socketio.on('disconnect')
+def on_disconnect():
+    print('Disconnected from server')
 
 
 # currently unused, saving public route for future use

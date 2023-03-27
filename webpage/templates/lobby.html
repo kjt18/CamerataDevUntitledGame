@@ -54,10 +54,10 @@
         {% endif %}
     </div>
 </nav>
+
 <section id="cards" class="container py-4 my-4 text-light">
-    <h1 class="py-5 text-center">
-        Lobby {{ lobby_name }}</h1>
-    </div>
+    <!--    <h1 class="py-5 text-center">{{ session.lobby_name }}</h1>-->
+    <h1 class="py-5 text-center">Lobby</h1>
     <h2>Users:</h2>
     <ul>
         <!--        {% for user in users %}-->
@@ -66,22 +66,26 @@
         <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
     </ul>
     <!--saving, displays screen to be used to display game-->
-    <div class="container border-light">
-        <canvas id="canvas" width="800" height="600"></canvas>
-        <script src="{{ url_for('static', filename='app.js') }}"></script>
+<!--    <div class="container border-light">-->
+<!--        <canvas id="canvas" width="800" height="600"></canvas>-->
+<!--        <script src="{{ url_for('static', filename='app.js') }}"></script>-->
+<!--    </div>-->
+
+    <div id="messages-container">
+        <div class="text-light" id="messages"></div>
     </div>
-    <h2>Chat</h2>
-    <div id="messages"></div>
-    <form id="message-form" action="">
-        <input type="text" id="message-input">
-        <!-- Button to send message via SocketIO -->
-        <button id="send-button" class="btn btn-primary">Send</button>
+
+
+    <form id="message-form">
+        <input type="text" id="message-input" autocomplete="off">
+        <button type="submit" id="send-button">Send</button>
     </form>
 
-    <!-- Button to leave SocketIO room -->
-    <button id="leave-button" class="btn btn-primary">Leave</button>
+    <button type="button" id="join-button">Join</button>
+    <button type="button" id="leave-button">Leave</button>
 </section>
 
+<!-- Add SocketIO code here -->
 <script>
         // Connect to SocketIO server
         const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -131,6 +135,7 @@
             $('#message-input').val('');
             socket.emit('message', {'message': message});
         });
+
         // Add event listener for join button
         const joinButton = document.getElementById('join-button');
         joinButton.addEventListener('click', function() {
@@ -145,6 +150,7 @@
             socket.emit('message', {'message': message});
         });
 
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -152,10 +158,16 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
 <script>
+    <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+
+
+
 
 
 

@@ -42,3 +42,11 @@ body {
     margin: 20px;
     padding: 10px;
   }
+
+#messages-container {
+    height: 300px;
+    overflow-y: scroll;
+}
+.message {
+    margin-bottom: 10px;
+}
