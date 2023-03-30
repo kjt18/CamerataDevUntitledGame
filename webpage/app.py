@@ -292,12 +292,14 @@ def private():
 
 
 # saved for testing purposes
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
 
 # Start the app
 # save for now, pycharm UI doesn't like this very much.
 # if __name__ == '__main__':
 #     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
 # if __name__ == '__main__':
-#     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
+#     socketio.run(app, host="127.0.0.1", port=5000)
+if __name__ == '__main__':
+    socketio.run(app, host="127.0.0.1", port=5000)
