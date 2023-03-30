@@ -1,0 +1,13 @@
+<!-- works in firefox, opera, safari, chrome -->
+    <style type="text/css">
+
+    table.tstyle {
+    	border: solid black 1px;
+    	border-spacing: 10px;
+    }
+    table.tstyle td {
+    	border: solid black 1px;
+    }
+
+
+    </style>

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from flask_mysqldb import MySQL
 import bcrypt
 
+
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
@@ -111,7 +112,65 @@ def login():
 
     # Set session username and redirect to index
     session['username'] = username
+    session['userid'] = user["id"]
     return redirect(url_for('index'))
+
+
+# TODO: 'TESTING' :: we need to test for other possible user inputs that would break the page
+
+@app.route('/stats', methods=['GET', 'POST'])
+def stats():
+    # retrieve player stats
+    cur = mysql.connection.cursor()
+    cur.execute('select * From playerstatsview where id = %s', (session['userid'],))
+    playerStats = cur.fetchall()
+    cur.close()
+
+    if playerStats is None:
+        # Add error message and render login page again
+        error = 'Player Stats do not exist'
+        return render_template('index.html', error=error)
+
+    p = "<tr><th>High Score</th><th>Highest Round</th><th>Won</th><th>Lost</th><th>Tied</th></tr>"
+
+    for row in playerStats:
+        p = p + "<tr\><td>%s</td>" % row['High Score']
+        p = p + "<td>%s</td>" % row["Highest Round"]
+        p = p + "<td>%s</td>" % row["Won"]
+        p = p + "<td>%s</td>" % row["Lost"]
+        p = p + "<td>%s</td></tr>" % row["Tied"]
+
+    session['mtable'] = p
+
+
+# retrieve player history
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM matchhistoryview where id = %s LIMIT 10', (session['userid'],))
+    playerHist = cur.fetchall()
+    cur.close()
+
+    if playerHist is None:
+        # Add error message and render login page again
+        error = 'Match History does not exist'
+        return render_template('index.html', error=error)
+
+    h = "<tr><th>Match Time</th><th>Player Name</th><th>Player Score</th>" \
+        "<th>Opponent Name</th><th>Opponent Score</th><th>Round</th><th>Result</th></tr>"
+
+    for row in playerHist:
+        h = h + "<tr><td>%s</td>" % row["matchtime"]
+        h = h + "<td>%s</td>" % row["Player Name"]
+        h = h + "<td>%s</td>" % row["Player Score"]
+        h = h + "<td>%s</td>" % row["Opponent Name"]
+        h = h + "<td>%s</td>" % row["Opponent Score"]
+        h = h + "<td>%s</td>" % row["Round"]
+        h = h + "<td>%s</td></tr>" % row["Result"]
+
+    session['htable'] = h
+
+    return render_template('stats.html', stats_string = session['mtable'], hist_string = session['htable'])
+
+
 
 
 # lobby goes here
