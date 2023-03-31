@@ -1,8 +1,7 @@
 import bcrypt
-import uuid
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_mysqldb import MySQL
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, leave_room
 
 app = Flask(__name__)
 app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
@@ -19,6 +18,9 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # app.config['SERVER_NAME'] = 'yourdomain.com'  # replace with your domain name
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 mysql = MySQL(app)
+
+# list of active game lobbies
+game_lobbies = []
 
 
 def encrypt_password(password):
@@ -77,70 +79,12 @@ def register():
 # logout goes here
 @app.route('/logout', methods=['POST'])
 def logout():
-    session_id = session.get('id')
-    if session_id is not None:
-        # Remove session from sessions table
-        cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM sessions WHERE id = %s', (session_id,))
-        mysql.connection.commit()
-        cur.close()
-
-        # Remove user session from user_sessions table
-        cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM user_sessions WHERE session_id = %s', (session_id,))
-        mysql.connection.commit()
-        cur.close()
-
     session.clear()
     return redirect(url_for('index'))
 
 
 # TODO: 'TESTING' :: we need to test for other possible user inputs that would break the login feature
 # login goes here
-@socketio.on('connect')
-def on_connect():
-    print('Connected to server')
-
-
-@socketio.on('login')
-def on_login(data):
-    username = data['username']
-
-    # Check if username exists in the database
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM accounts WHERE username = %s', (username,))
-    user = cur.fetchone()
-
-    if user is None:
-        # Add error message and emit login_failed event
-        error = 'Username does not exist'
-        emit('login_failed', {'error': error})
-    else:
-        # Verify password
-        hashed_password = user['phash'].encode('utf-8')
-        if check_password(data['password'], hashed_password):
-            # Create new session
-            session_id = uuid.uuid4().hex
-            session['id'] = session_id
-
-            # Add session to sessions table
-            cur.execute('INSERT INTO sessions (id) VALUES (%s)', (session_id,))
-            mysql.connection.commit()
-
-            # Add user session to user_sessions table
-            cur.execute('INSERT INTO user_sessions (user_id, session_id) VALUES (%s, %s)', (user['id'], session_id))
-            mysql.connection.commit()
-
-            # Emit login_successful event only to the current client
-            request.namespace.emit('login_successful', {'username': username})
-        else:
-            # Add error message and emit login_failed event
-            error = 'Incorrect password'
-            emit('login_failed', {'error': error})
-
-    cur.close()
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -167,148 +111,65 @@ def login():
         error = 'Incorrect password'
         return render_template('login.html', error=error)
 
-    # Redirect the user to the homepage after login
+    # Set session username and redirect to index
+    session['username'] = username
+    session['userid'] = user["id"]
     return redirect(url_for('index'))
 
 
 # game page defined here, displays active lobbies
 @app.route('/game')
 def game():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM lobby')
-    lobbies = cur.fetchall()
-    cur.close()
-    return render_template('game.html', lobbies=lobbies)
+    username = session.get('username')
+    if username is None:
+        # redirect the user to the login page if they're not logged in
+        return redirect(url_for('login'))
+    return render_template('game.html')
 
 
-# lobby page, currently only displays created lobbies
-# @app.route('/lobby')
-# def lobby():
+@app.route('/lobby')
+def lobby():
+    username = session.get('username')
+    if username is None:
+        # redirect the user to the login page if they're not logged in
+        return redirect(url_for('login'))
+    return render_template('lobby.html')
 
 
-@app.route('/create_lobby', methods=['GET', 'POST'])
-def create_lobby():
-    if request.method == 'POST':
-        lobby_name = request.form['lobby_name']
-        owner_name = request.form['owner_name']
-        game_type = request.form['game_type']
-        num_players = request.form['num_players']
-
-        cur = mysql.connection.cursor()
-        cur.execute(
-            'INSERT INTO lobby (lobby_name, owner_name, game_type, num_players) VALUES (%s, %s, %s, %s)',
-            (lobby_name, owner_name, game_type, num_players))
-        mysql.connection.commit()
-        cur.close()
-
-        # join the lobby and emit a message to notify other users
-        username = owner_name
-        session['username'] = username
-        join_room(lobby_name)
-
-        # set the sid value in the session
-        session['sid'] = request.sid
-
-        # retrieve the sid value from the session
-        sid = session.get('sid')
-        if sid:
-            emit('user_join', {'lobby_id': lobby_name, 'username': username, 'sid': sid}, broadcast=True)
-        else:
-            # handle the case where 'sid' value is not present in the session
-            # for example, redirect to an error page or log the error
-            pass
-
-        # join the newly created lobby
-        join_room(lobby_name)
-
-        return redirect(url_for('lobby', lobby_id=lobby_name))
-
-    return render_template('create_lobby.html')
+@socketio.on('connect')
+def handle_connect():
+    # emit the list of game lobbies to the newly connected client
+    emit('game_lobbies', game_lobbies)
 
 
-@app.route('/join_lobby/<lobby_id>', methods=['GET', 'POST'])
-def join_lobby(lobby_id):
-    if request.method == 'POST':
-        username = request.form['username']
-        session['username'] = username
-        join_room(lobby_id)
-        emit('user_join', {'lobby_id': lobby_id, 'username': username, 'sid': request.sid}, room=lobby_id,
-             include_self=False)
-        cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO lobby_players (lobby_id, username) VALUES (%s, %s)', (lobby_id, username))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('lobby'))
-
-    return render_template('join_lobby.html', lobby_id=lobby_id)
+@socketio.on('create_lobby')
+def handle_create_lobby(data):
+    # add the new lobby to the list of game lobbies
+    game_lobbies.append({'name': data['name'], 'users': [session['username']]})
+    # emit the updated list of game lobbies to all connected clients
+    emit('game_lobbies', game_lobbies, broadcast=True)
 
 
-@socketio.on('join')
-def handle_join(data):
-    lobby_id = data['lobby_id']
-    username = data['username']
-    sid = data['sid']  # get the sid value from the data parameter
-    cur = mysql.connection.cursor()
-    cur.execute('INSERT INTO lobby_players (lobby_id, username) VALUES (%s, %s)', (lobby_id, username))
-    mysql.connection.commit()
-    cur.close()
-    emit('user_join', {'lobby_id': lobby_id, 'username': username, 'sid': sid}, room=lobby_id,
-         include_self=False)  # send the message to the room and exclude the sender
-    emit('user_join_notification', {'username': username}, room=lobby_id,
-         include_self=False)  # send a notification message to other users in the room
-
-
-@socketio.on('join')
-def on_join(data):
-    username = data['username']
-    session['username'] = username
-    join_room('lobby')
-    emit('joined', {'username': username}, broadcast=True)
-
-
-# handler for when user leaves lobby
-@socketio.on('leave')
-def handle_leave(data):
-    lobby_id = data['lobby_id']
-    username = data['username']
-    cur = mysql.connection.cursor()
-    cur.execute('DELETE FROM lobby_players WHERE lobby_id = %s AND username = %s', (lobby_id, username))
-    mysql.connection.commit()
-    cur.close()
-    emit('user_leave', {'lobby_id': lobby_id, 'username': username}, broadcast=True)
-
-
-# TODO: need to figure out how to get into specific lobby to join/leave
-# @app.route('/leave_lobby/<int:lobby_id>', methods=['POST'])
-# def leave_lobby(lobby_id):
-#     username = request.form['username']
-#     cur = mysql.connection.cursor()
-#     cur.execute('DELETE FROM lobby_players WHERE lobby_id = %s AND username = %s', (lobby_id, username))
-#     mysql.connection.commit()
-#     cur.close()
-#     return redirect(url_for('lobby'))
-
-
-# handles user interaction when user leaves lobby
-@socketio.on('leave')
-def on_leave(data):
-    username = data['username']
-    session.pop('username', None)
-    leave_room('lobby')
-    emit('left', {'username': username}, broadcast=True)
-
-
-# handles messages being sent and displayed
-@socketio.on('message')
-def handle_message(data):
-    username = session['username']
-    message = data['message']
-    emit('message', {'username': username, 'message': message}, room='lobby')
+@socketio.on('join_lobby')
+def handle_join_lobby(data):
+    # find the game lobby by name and add the user to it
+    for lobby in game_lobbies:
+        if lobby['name'] == data['name']:
+            lobby['users'].append(session['username'])
+    # emit the updated list of game lobbies to all connected clients
+    emit('game_lobbies', game_lobbies, broadcast=True)
 
 
 @socketio.on('disconnect')
-def on_disconnect():
-    print('Disconnected from server')
+def handle_disconnect():
+    username = session['username']
+    # remove the user from any game lobbies they were in
+    for lobby in game_lobbies:
+        if username in lobby['users']:
+            lobby['users'].remove(username)
+            emit('user_left_lobby', {'username': username}, room=lobby['name'])
+    # emit the updated list of game lobbies to all connected clients
+    emit('game_lobbies', game_lobbies, broadcast=True)
 
 
 # currently unused, saving public route for future use
