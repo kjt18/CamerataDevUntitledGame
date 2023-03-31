@@ -1,6 +1,6 @@
 import bcrypt
-from flask import Flask, render_template, session, request
-from flask import redirect, url_for
+import uuid
+from flask import Flask, render_template, session, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
@@ -77,12 +77,70 @@ def register():
 # logout goes here
 @app.route('/logout', methods=['POST'])
 def logout():
+    session_id = session.get('id')
+    if session_id is not None:
+        # Remove session from sessions table
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM sessions WHERE id = %s', (session_id,))
+        mysql.connection.commit()
+        cur.close()
+
+        # Remove user session from user_sessions table
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM user_sessions WHERE session_id = %s', (session_id,))
+        mysql.connection.commit()
+        cur.close()
+
     session.clear()
     return redirect(url_for('index'))
 
 
 # TODO: 'TESTING' :: we need to test for other possible user inputs that would break the login feature
 # login goes here
+@socketio.on('connect')
+def on_connect():
+    print('Connected to server')
+
+
+@socketio.on('login')
+def on_login(data):
+    username = data['username']
+
+    # Check if username exists in the database
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+    user = cur.fetchone()
+
+    if user is None:
+        # Add error message and emit login_failed event
+        error = 'Username does not exist'
+        emit('login_failed', {'error': error})
+    else:
+        # Verify password
+        hashed_password = user['phash'].encode('utf-8')
+        if check_password(data['password'], hashed_password):
+            # Create new session
+            session_id = uuid.uuid4().hex
+            session['id'] = session_id
+
+            # Add session to sessions table
+            cur.execute('INSERT INTO sessions (id) VALUES (%s)', (session_id,))
+            mysql.connection.commit()
+
+            # Add user session to user_sessions table
+            cur.execute('INSERT INTO user_sessions (user_id, session_id) VALUES (%s, %s)', (user['id'], session_id))
+            mysql.connection.commit()
+
+            # Emit login_successful event only to the current client
+            request.namespace.emit('login_successful', {'username': username})
+        else:
+            # Add error message and emit login_failed event
+            error = 'Incorrect password'
+            emit('login_failed', {'error': error})
+
+    cur.close()
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -109,15 +167,8 @@ def login():
         error = 'Incorrect password'
         return render_template('login.html', error=error)
 
-    # Set session username and redirect to index
-    session['username'] = username
+    # Redirect the user to the homepage after login
     return redirect(url_for('index'))
-
-
-# about page route defined here
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 
 # game page defined here, displays active lobbies
@@ -128,29 +179,13 @@ def game():
     lobbies = cur.fetchall()
     cur.close()
     return render_template('game.html', lobbies=lobbies)
-    # lobby_id = session.get('id')
-    # # owner_id = session.get('owner_id')
-    # cur = mysql.connection.cursor()
-    # cur.execute('SELECT id FROM lobby WHERE id = %s', (lobby_id,))
-    # lobby = cur.fetchone()
-    # cur.execute('SELECT id FROM lobby')
-    # lobbies = cur.fetchall()
-    # cur.close()
-    # return render_template('game.html', lobby=lobby, lobbies=lobbies)
 
 
 # lobby page, currently only displays created lobbies
-@app.route('/lobby')
-def lobby():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM lobby')
-    lobbies = cur.fetchall()
-    cur.close()
-    return render_template('lobby.html', lobbies=lobbies)
+# @app.route('/lobby')
+# def lobby():
 
 
-# uses mysql db to create lobby.
-# TODO: implement joining and removal of users
 @app.route('/create_lobby', methods=['GET', 'POST'])
 def create_lobby():
     if request.method == 'POST':
@@ -158,7 +193,6 @@ def create_lobby():
         owner_name = request.form['owner_name']
         game_type = request.form['game_type']
         num_players = request.form['num_players']
-        # lobby_players = request.form['lobby_players']
 
         cur = mysql.connection.cursor()
         cur.execute(
@@ -166,19 +200,70 @@ def create_lobby():
             (lobby_name, owner_name, game_type, num_players))
         mysql.connection.commit()
         cur.close()
-        return redirect(url_for('lobby'))
+
+        # join the lobby and emit a message to notify other users
+        username = owner_name
+        session['username'] = username
+        join_room(lobby_name)
+
+        # set the sid value in the session
+        session['sid'] = request.sid
+
+        # retrieve the sid value from the session
+        sid = session.get('sid')
+        if sid:
+            emit('user_join', {'lobby_id': lobby_name, 'username': username, 'sid': sid}, broadcast=True)
+        else:
+            # handle the case where 'sid' value is not present in the session
+            # for example, redirect to an error page or log the error
+            pass
+
+        # join the newly created lobby
+        join_room(lobby_name)
+
+        return redirect(url_for('lobby', lobby_id=lobby_name))
+
     return render_template('create_lobby.html')
+
+
+@app.route('/join_lobby/<lobby_id>', methods=['GET', 'POST'])
+def join_lobby(lobby_id):
+    if request.method == 'POST':
+        username = request.form['username']
+        session['username'] = username
+        join_room(lobby_id)
+        emit('user_join', {'lobby_id': lobby_id, 'username': username, 'sid': request.sid}, room=lobby_id,
+             include_self=False)
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO lobby_players (lobby_id, username) VALUES (%s, %s)', (lobby_id, username))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('lobby'))
+
+    return render_template('join_lobby.html', lobby_id=lobby_id)
 
 
 @socketio.on('join')
 def handle_join(data):
     lobby_id = data['lobby_id']
     username = data['username']
+    sid = data['sid']  # get the sid value from the data parameter
     cur = mysql.connection.cursor()
     cur.execute('INSERT INTO lobby_players (lobby_id, username) VALUES (%s, %s)', (lobby_id, username))
     mysql.connection.commit()
     cur.close()
-    emit('user_join', {'lobby_id': lobby_id, 'username': username}, broadcast=True)
+    emit('user_join', {'lobby_id': lobby_id, 'username': username, 'sid': sid}, room=lobby_id,
+         include_self=False)  # send the message to the room and exclude the sender
+    emit('user_join_notification', {'username': username}, room=lobby_id,
+         include_self=False)  # send a notification message to other users in the room
+
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    session['username'] = username
+    join_room('lobby')
+    emit('joined', {'username': username}, broadcast=True)
 
 
 # handler for when user leaves lobby
@@ -192,6 +277,7 @@ def handle_leave(data):
     cur.close()
     emit('user_leave', {'lobby_id': lobby_id, 'username': username}, broadcast=True)
 
+
 # TODO: need to figure out how to get into specific lobby to join/leave
 # @app.route('/leave_lobby/<int:lobby_id>', methods=['POST'])
 # def leave_lobby(lobby_id):
@@ -201,23 +287,6 @@ def handle_leave(data):
 #     mysql.connection.commit()
 #     cur.close()
 #     return redirect(url_for('lobby'))
-
-
-# current implementation for lobby feature
-# handles when user connects to lobby
-@socketio.on('connect')
-def on_connect():
-    print('Connected to server')
-    emit('joined', {'username': session['username']}, broadcast=True)
-
-
-# handles user interaction when user joins lobby
-@socketio.on('join')
-def on_join(data):
-    username = data['username']
-    session['username'] = username
-    join_room('lobby')
-    emit('joined', {'username': username}, broadcast=True)
 
 
 # handles user interaction when user leaves lobby
@@ -252,6 +321,12 @@ def public():
 @app.route('/private')
 def private():
     return render_template('private.html')
+
+
+# about page route defined here
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 # saved for testing purposes

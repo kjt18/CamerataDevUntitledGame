@@ -80,7 +80,8 @@
                 <div class="card-body d-flex flex-column align-items-start">
                     <h4 class="card-title font-weight-bold">Public Lobby</h4>
                     <p>add description of public games and quick play feature</p>
-                    <button class="btn btn-light btn-hover" onclick="window.location.href='{{ url_for('create_lobby') }}'">
+                    <button class="btn btn-light btn-hover"
+                            onclick="window.location.href='{{ url_for('create_lobby') }}'">
                         Create Public Lobby
                     </button>
                 </div>
@@ -97,6 +98,21 @@
                 </div>
             </div>
         </div>
+        <div class="row mx-auto">
+            <div class="col-lg-4 mb-4">
+                <div class="card border-light bg-dark-gray text-light h-100">
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <h4 class="card-title font-weight-bold">Join a Game</h4>
+                        <p>add description of public games and quick play feature</p>
+                        <button class="btn btn-light btn-hover"
+                                onclick="window.location.href='{{ url_for('join_lobby', lobby_id='<lobby_id>') }}'">
+                            Join Public Lobby
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -107,7 +123,8 @@
             <a class="text-dark" href="https://github.com/kjt18/CamerataDevUntitledGame"
                alt="Camerata Developement's repository">Camerata Developments</a>
             <br>
-            <a class="text-dark" href="https://flask.palletsprojects.com/en/2.2.x/" alt="Flask Documentation">Flask</a>
+            <a class="text-dark" href="https://flask.palletsprojects.com/en/2.2.x/"
+               alt="Flask Documentation">Flask</a>
             <a class="text-dark" href="https://bootstrap-flask.readthedocs.io/en/stable/"
                alt="Bootstrap-Flask Documentation">Bootstrap Flask</a>
             <a class="text-dark" href="https://bootstrap.themes.guide/darkster/"
@@ -136,6 +153,8 @@
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+
 
 
 

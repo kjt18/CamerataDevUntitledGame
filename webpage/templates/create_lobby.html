@@ -20,27 +20,31 @@
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
             <h2 class="text-white">Create a New Lobby</h2>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="lobby_name">Lobby Name:</label>
-                    <input type="text" class="form-control" id="lobby_name" name="lobby_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="owner_name">Owner Name:</label>
-                    <input type="text" class="form-control" id="owner_name" name="owner_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="game_type">Game Type:</label>
-                    <input type="text" class="form-control" id="game_type" name="game_type" required>
-                </div>
-                <div class="form-group">
-                    <label for="num_players">Number of Players:</label>
-                    <input type="number" class="form-control" id="num_players" name="num_players" required>
-                </div>
-                <button type="submit" class="btn btn-light">Create Lobby</button>
+            <form method="POST" action="{{ url_for('create_lobby') }}">
+                <label for="lobby_name">Lobby Name:</label>
+                <input type="text" name="lobby_name" id="lobby_name">
+                <br>
+                <label for="owner_name">Owner Name:</label>
+                <input type="text" name="owner_name" id="owner_name">
+                <br>
+                <label for="game_type">Game Type:</label>
+                <input type="text" name="game_type" id="game_type">
+                <br>
+                <label for="num_players">Number of Players:</label>
+                <input type="text" name="num_players" id="num_players">
+                <br>
+                <input type="submit" value="Create">
             </form>
         </div>
     </div>
 </section>
+<script src="https://cdn.socket.io/socket.io-4.4.0.min.js"></script>
+<script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+</script>
 </body>
 </html>
