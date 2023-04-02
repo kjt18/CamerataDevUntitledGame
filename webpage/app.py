@@ -143,8 +143,7 @@ def stats():
 
     session['mtable'] = p
 
-
-# retrieve player history
+    # retrieve player history
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM matchhistoryview where id = %s LIMIT 10', (session['userid'],))
     playerHist = cur.fetchall()
@@ -169,7 +168,7 @@ def stats():
 
     session['htable'] = h
 
-    return render_template('stats.html', stats_string = session['mtable'], hist_string = session['htable'])
+    return render_template('stats.html', stats_string=session['mtable'], hist_string=session['htable'])
 
 
 # game page defined here, displays active lobbies
@@ -200,7 +199,7 @@ def handle_connect():
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
     # add the new lobby to the list of game lobbies
-    game_lobbies.append({'name': data['name'], 'users': [session['username']]})
+    game_lobbies.append({'name': data['name'], 'users': [session['username']], 'max_players': 2})
     # emit the updated list of game lobbies to all connected clients
     emit('game_lobbies', game_lobbies, broadcast=True)
 
@@ -210,9 +209,25 @@ def handle_join_lobby(data):
     # find the game lobby by name and add the user to it
     for lobby in game_lobbies:
         if lobby['name'] == data['name']:
-            lobby['users'].append(session['username'])
-    # emit the updated list of game lobbies to all connected clients
-    emit('game_lobbies', game_lobbies, broadcast=True)
+            if len(lobby['users']) < lobby['max_players']:  # check if lobby is full
+                lobby['users'].append(session['username'])
+                # emit the updated list of game lobbies to all connected clients
+                emit('game_lobbies', game_lobbies, broadcast=True)
+            else:
+                # emit a message to the client that the lobby is full
+                emit('lobby_full', {'message': 'This lobby is full.'})
+                return
+
+
+@socketio.on('leave_lobby')
+def handle_leave_lobby(data):
+    # find the game lobby by name and remove the user from it
+    for lobby in game_lobbies:
+        if lobby['name'] == data['name']:
+            lobby['users'].remove(session['username'])
+            # emit the updated list of game lobbies to all connected clients
+            emit('game_lobbies', game_lobbies, broadcast=True)
+        break
 
 
 @socketio.on('disconnect')

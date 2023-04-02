@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
           integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='./css/game.css') }}">
 </head>
 
 <body style="background-color:black">
@@ -58,15 +58,24 @@
 <section id="cards1" class="container py-5 mt-5">
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h1>Active Game Lobbies</h1>
+            <h1>Lobby List</h1>
             <div class="d-flex my-3">
                 <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-                    <ul id="game-lobbies"></ul>
+                    <ul id="game-lobbies">
+                        {% for lobby in game_lobbies %}
+                            <li>
+                                <span>{{ lobby['name'] }}</span>
+                                <span>({{ len(lobby['users']) }}/{{ lobby['max_players'] }})</span>
+                                <button class="btn btn-primary join-lobby-btn" data-name="{{ lobby['name'] }}">Join</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 
 <!--test to join a public lobby-->
@@ -78,7 +87,7 @@
                     <h4 class="card-title font-weight-bold">Public Lobby</h4>
                     <p>add description of public games and quick play feature</p>
                     <button class="btn btn-light btn-hover"
-                            onclick="window.location.href='{{ url_for('index') }}'">
+                            onclick="window.location.href='{{ url_for('lobby') }}'">
                         Create Public Lobby
                     </button>
                 </div>
