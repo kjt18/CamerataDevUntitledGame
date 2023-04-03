@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_mysqldb import MySQL
 import bcrypt
-
+import re
 
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
@@ -50,8 +50,6 @@ def register():
 
     username = request.form['username']
     password = request.form['password']
-    session['username'] = username
-    hashed_password = encrypt_password(password)
 
     # Check if username already exists in the database
     cursor = mysql.connection.cursor()
@@ -63,6 +61,25 @@ def register():
         # Username already exists, add error message and render register page again
         error = 'Username already exists'
         return render_template('register.html', error=error)
+
+    while True:
+        if not re.search("[A-Z]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif not re.search("[0-9\W]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif len(password) < 6 or len(password) > 20:
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        else:
+            break
+
+    session['username'] = username
+    hashed_password = encrypt_password(password)
 
     # Create new account
     cursor = mysql.connection.cursor()
@@ -134,7 +151,7 @@ def stats():
     p = "<tr><th>High Score</th><th>Highest Round</th><th>Won</th><th>Lost</th><th>Tied</th></tr>"
 
     for row in playerStats:
-        p = p + "<tr\><td>%s</td>" % row['High Score']
+        p = p + "<tr><td>%s</td>" % row['High Score']
         p = p + "<td>%s</td>" % row["Highest Round"]
         p = p + "<td>%s</td>" % row["Won"]
         p = p + "<td>%s</td>" % row["Lost"]
@@ -142,8 +159,7 @@ def stats():
 
     session['mtable'] = p
 
-
-# retrieve player history
+    # retrieve player history
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM matchhistoryview where id = %s LIMIT 10', (session['userid'],))
     playerHist = cur.fetchall()
@@ -168,9 +184,7 @@ def stats():
 
     session['htable'] = h
 
-    return render_template('stats.html', stats_string = session['mtable'], hist_string = session['htable'])
-
-
+    return render_template('stats.html', stats_string=session['mtable'], hist_string=session['htable'])
 
 
 # lobby goes here
