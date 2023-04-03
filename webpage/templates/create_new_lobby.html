@@ -58,8 +58,18 @@
 <section id="cards1" class="container py-5 mt-5">
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h1>Active Game Lobbies</h1>
-            <ul id="game-lobbies"></ul>
+            <span id="lobby-name"></span>
+            <div>Users list:
+            <ul>
+                <li>
+                    <span id="lobby-users"></span>
+                </li>
+            </ul></div>
+            <div id="lobby-canvas" class="container py-5 mt-5">
+                <div class="d-flex my-3">
+                    <canvas id="game-canvas" width="600" height="800"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -77,11 +87,26 @@
     </div>
 </section>
 
+<section id="cards3" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2>Join an Existing Game Lobby</h2>
+            <form id="join-lobby-form">
+                <label for="join-lobby-name-input">Lobby Name:</label>
+                <input type="text" id="join-lobby-name-input">
+                <button type="submit">Join Lobby</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
+
 <script>
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
@@ -89,7 +114,15 @@
     socket.on('game_lobbies', function(data) {
         $('#game-lobbies').empty();
         $.each(data, function(index, lobby) {
-            $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', ') + ' <button class="leave-lobby-btn" data-lobby-name="' + lobby.name + '" data-username="' + lobby.username + '">Leave</button></li>');
+            var lobbyName = lobby.name;
+            var lobbyUsers = lobby.users.join(', ');
+            $('#lobby-name').text(lobbyName);
+            $('#lobby-users').text(lobbyUsers);
+
+            $.each(lobby.users, function(index, user) {
+                var username = user.username;
+                $('#game-lobbies').append('<li>' + lobbyName + ': ' + lobbyUsers + ' <button class="leave-lobby-btn" data-lobby-name="' + lobbyName + '" data-username="' + username + '">Leave</button></li>');
+            });
         });
     });
 
@@ -107,7 +140,6 @@
         var name = $('#lobby-name-input').val();
         var username = $('#username-input').val();
         socket.emit('create_lobby', {'name': name, 'username': username});
-
     });
 
     // handle joining an existing game lobby

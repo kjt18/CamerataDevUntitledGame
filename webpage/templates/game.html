@@ -57,17 +57,17 @@
 </nav>
 
 <section id="cards1" class="container py-5 mt-5">
-    <h1 class="text-center">Lobby List</h1>
+    <h1 class="text-center text-light">Lobby List</h1>
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
             <ul id="game-lobbies">
-                {% for lobby in game_lobbies %}
-                <li>
-                    <span>{{ lobby['name'] }}</span>
-                    <span>({{ len(lobby['users']) }}/{{ lobby['max_players'] }})</span>
-                    <button class="btn btn-primary join-lobby-btn" data-name="{{ lobby['name'] }}">Join</button>
-                </li>
-                {% endfor %}
+<!--                {% for lobby in game_lobbies %}-->
+<!--                <li>-->
+<!--                    <span>{{ lobby['name'] }}</span>-->
+<!--                    <span>({{ len(lobby['users']) }}/{{ lobby['max_players'] }})</span>-->
+<!--                    <button class="btn btn-primary join-lobby-btn" data-name="{{ lobby['name'] }}">Join</button>-->
+<!--                </li>-->
+<!--                {% endfor %}-->
             </ul>
         </div>
     </div>
@@ -161,16 +161,31 @@
         socket.emit('join_lobby', {'name': name, 'username': username});
         $('#join-lobby-name-input').val('');
         $('#join-username-input').val('');
-
-        // Redirect to lobby.html with lobby data in query string
-        var lobbyData = {'name': name, 'username': username};
-        var queryString = $.param(lobbyData);
-        window.location.href = '/lobby.html?' + queryString;
     });
 
 
+</script>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
 
 </script>
+<script>
+    window.addEventListener('scroll', function() {
+        var modal = document.getElementById('myModal');
+        var modalTop = modal.getBoundingClientRect().top;
+        var windowHeight = window.innerHeight;
+        if (modalTop < windowHeight) {
+            // Add class to show modal
+            modal.classList.add('fade-in');
+        } else {
+            // Remove class to hide modal
+            modal.classList.remove('fade-in');
+        }
+    });
 
+</script>
 </body>
 </html>

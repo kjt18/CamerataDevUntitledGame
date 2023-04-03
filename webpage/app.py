@@ -187,11 +187,7 @@ def lobby():
     if username is None:
         # redirect the user to the login page if they're not logged in
         return redirect(url_for('login'))
-
-    lobby_name = request.args.get('name')
-    lobby_username = request.args.get('username')
-
-    return render_template('lobby.html', lobby_name=lobby_name, lobby_username=lobby_username)
+    return render_template('lobby.html')
 
 
 @app.route('/create_new_lobby')
@@ -265,12 +261,6 @@ def public():
 @app.route('/private')
 def private():
     return render_template('private.html')
-
-
-# about page route defined here
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 
 # saved for testing purposes
