@@ -6,7 +6,7 @@
     <meta name="author" content="Camerata Developments">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Camerata Developments</title>
-    <meta name="description" content="lobby page">
+    <meta name="description" content="create_new_lobby page">
     <!-- favicon goes here -->
     <!-- <link rel="icon" type="" href=""> -->
     <!--add stylesheets here-->
@@ -108,8 +108,6 @@
         var username = $('#username-input').val();
         socket.emit('create_lobby', {'name': name, 'username': username});
 
-        // Redirect to lobby.html
-        window.location.href = '/lobby.html';
     });
 
     // handle joining an existing game lobby
@@ -142,23 +140,7 @@
         $('.leave-lobby-btn').closest('li').remove();
     });
 
-    // get lobby data from query string
-    var lobbyData = {};
-    var queryString = window.location.search.substring(1);
-    var keyValuePairs = queryString.split('&');
-    for (var i = 0; i < keyValuePairs.length; i++) {
-        var keyValue = keyValuePairs[i].split('=');
-        lobbyData[keyValue[0]] = decodeURIComponent(keyValue[1]);
-    }
 
-    // use lobby data
-    var lobbyName = lobbyData['name'];
-    var username = lobbyData['username'];
-    // ...
-
-    socket.on('lobby_created', function(lobby) {
-        $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', ') + ' <button class="leave-lobby-btn" data-lobby-name="' + lobby.name + '" data-username="' + lobby.username + '">Leave</button></li>');
-    });
 </script>
 </body>
 </html>

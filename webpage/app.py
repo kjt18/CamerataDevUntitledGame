@@ -187,7 +187,20 @@ def lobby():
     if username is None:
         # redirect the user to the login page if they're not logged in
         return redirect(url_for('login'))
-    return render_template('lobby.html')
+
+    lobby_name = request.args.get('name')
+    lobby_username = request.args.get('username')
+
+    return render_template('lobby.html', lobby_name=lobby_name, lobby_username=lobby_username)
+
+
+@app.route('/create_new_lobby')
+def create_new_lobby():
+    username = session.get('username')
+    if username is None:
+        # redirect the user to the login page if they're not logged in
+        return redirect(url_for('login'))
+    return render_template('create_new_lobby.html')
 
 
 @socketio.on('connect')
