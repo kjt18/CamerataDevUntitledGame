@@ -2,6 +2,7 @@ import bcrypt
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit
+import re
 
 app = Flask(__name__)
 app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
@@ -51,8 +52,6 @@ def register():
 
     username = request.form['username']
     password = request.form['password']
-    session['username'] = username
-    hashed_password = encrypt_password(password)
 
     # Check if username already exists in the database
     cursor = mysql.connection.cursor()
@@ -64,6 +63,25 @@ def register():
         # Username already exists, add error message and render register page again
         error = 'Username already exists'
         return render_template('register.html', error=error)
+
+    while True:
+        if not re.search("[A-Z]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif not re.search("[0-9\W]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif len(password) < 6 or len(password) > 20:
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        else:
+            break
+
+    session['username'] = username
+    hashed_password = encrypt_password(password)
 
     # Create new account
     cursor = mysql.connection.cursor()
