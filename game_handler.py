@@ -17,23 +17,65 @@ class Instance:
         return self.pipe.recv()
 
 
-# todo change this to communicate with client through socket instead of using input()
-# todo add support for paired instances that will share a seed
+# TODO add shared seed support in init
+class Match:
+
+    def __init__(self, match_id, players):
+        self.match_id = match_id
+        self.players = players
+        self.instances = []
+        for player in players:
+            self.instances.append(Instance(player))
+
+    def command(self, player, command) -> str:
+        if player in self.players:
+            for instance in self.instances:
+                if instance.name == player:
+                    return instance.command(command)
+        else:
+            return "Player not in match."
+
+
+# TODO add flags for finished game and winner
+class GameHandler:
+    def __init__(self):
+        self.matches = []
+
+    def new_match(self, match_id, player1, player2):
+        players = [player1, player2]
+        self.matches.append(Match(match_id, players))
+
+    def end_match(self, match_id):
+        for match in self.matches:
+            if match.match_id == match_id:
+                self.matches.remove(match)
+                return True
+        return False
+
+    def command(self, match_id, player, command):
+        for match in self.matches:
+            if match.match_id == match_id:
+                return match.command(player, command)
+        return None
+
+
+#
 def main():
-    instances = []
+    game_handler = GameHandler()
     while True:
-        found = False
         query = str(input())
-        print(query)
-        name, command = query.split(',')
-        for x in instances:
-            if x.name == name:
-                print(x.command(command))
-                found = True
-        if not found:
-            new_instance = Instance(name)
-            print(new_instance.command(command))
-            instances.append(new_instance)
+        if query.find("newmatch:") > -1:
+            discard, query = query.split(':')
+            match, player1, player2 = query.split(',')
+            game_handler.new_match(match, player1, player2)
+            print("Created match!")
+        else:
+            match, player, command = query.split(',')
+            console = game_handler.command(match, player, command)
+            if console is None:
+                print("Match not found")
+            else:
+                print(console)
 
 
 if __name__ == "__main__":
