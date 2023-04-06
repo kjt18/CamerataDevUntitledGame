@@ -2,21 +2,14 @@ import bcrypt
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit
+import re
+import config
 
 app = Flask(__name__)
-app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 socketio = SocketIO(app)
 
-# TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
-# Configure MySQL database
-app.config['MYSQL_USER'] = 'capstonesa'
-app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
-app.config['MYSQL_DB'] = 'capstone'
-app.config['MYSQL_HOST'] = 'capstone-server.mysql.database.azure.com'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-# added to use https
-# app.config['SERVER_NAME'] = 'yourdomain.com'  # replace with your domain name
-app.config['PREFERRED_URL_SCHEME'] = 'https'
+config.db_config(app)
+
 mysql = MySQL(app)
 
 # list of active game lobbies
@@ -51,8 +44,6 @@ def register():
 
     username = request.form['username']
     password = request.form['password']
-    session['username'] = username
-    hashed_password = encrypt_password(password)
 
     # Check if username already exists in the database
     cursor = mysql.connection.cursor()
@@ -64,6 +55,25 @@ def register():
         # Username already exists, add error message and render register page again
         error = 'Username already exists'
         return render_template('register.html', error=error)
+
+    while True:
+        if not re.search("[A-Z]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif not re.search("[0-9\W]", password):
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        elif len(password) < 6 or len(password) > 20:
+            error = 'Password must be between 6 to 20 characters, ' \
+                    'and contain at least one capital letter and number or symbol'
+            return render_template('register.html', error=error)
+        else:
+            break
+
+    session['username'] = username
+    hashed_password = encrypt_password(password)
 
     # Create new account
     cursor = mysql.connection.cursor()
@@ -143,8 +153,7 @@ def stats():
 
     session['mtable'] = p
 
-
-# retrieve player history
+    # retrieve player history
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM matchhistoryview where id = %s LIMIT 10', (session['userid'],))
     playerHist = cur.fetchall()
@@ -169,7 +178,7 @@ def stats():
 
     session['htable'] = h
 
-    return render_template('stats.html', stats_string = session['mtable'], hist_string = session['htable'])
+    return render_template('stats.html', stats_string=session['mtable'], hist_string=session['htable'])
 
 
 # game page defined here, displays active lobbies
@@ -200,7 +209,7 @@ def handle_connect():
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
     # add the new lobby to the list of game lobbies
-    game_lobbies.append({'name': data['name'], 'users': [session['username']]})
+    game_lobbies.append({'name': data['name'], 'users': [session['username']], 'max_players': 2})
     # emit the updated list of game lobbies to all connected clients
     emit('game_lobbies', game_lobbies, broadcast=True)
 
@@ -210,9 +219,25 @@ def handle_join_lobby(data):
     # find the game lobby by name and add the user to it
     for lobby in game_lobbies:
         if lobby['name'] == data['name']:
-            lobby['users'].append(session['username'])
-    # emit the updated list of game lobbies to all connected clients
-    emit('game_lobbies', game_lobbies, broadcast=True)
+            if len(lobby['users']) < lobby['max_players']:  # check if lobby is full
+                lobby['users'].append(session['username'])
+                # emit the updated list of game lobbies to all connected clients
+                emit('game_lobbies', game_lobbies, broadcast=True)
+            else:
+                # emit a message to the client that the lobby is full
+                emit('lobby_full', {'message': 'This lobby is full.'})
+                return
+
+
+@socketio.on('leave_lobby')
+def handle_leave_lobby(data):
+    # find the game lobby by name and remove the user from it
+    for lobby in game_lobbies:
+        if lobby['name'] == data['name']:
+            lobby['users'].remove(session['username'])
+            # emit the updated list of game lobbies to all connected clients
+            emit('game_lobbies', game_lobbies, broadcast=True)
+        break
 
 
 @socketio.on('disconnect')
