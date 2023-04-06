@@ -3,21 +3,13 @@ from flask import Flask, render_template, session, request, redirect, url_for
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit
 import re
+import config
 
 app = Flask(__name__)
-app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
 socketio = SocketIO(app)
 
-# TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
-# Configure MySQL database
-app.config['MYSQL_USER'] = 'capstonesa'
-app.config['MYSQL_PASSWORD'] = 'C@pstonepassword'
-app.config['MYSQL_DB'] = 'capstone'
-app.config['MYSQL_HOST'] = 'capstone-server.mysql.database.azure.com'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-# added to use https
-# app.config['SERVER_NAME'] = 'yourdomain.com'  # replace with your domain name
-app.config['PREFERRED_URL_SCHEME'] = 'https'
+config.db_config(app)
+
 mysql = MySQL(app)
 
 # list of active game lobbies
