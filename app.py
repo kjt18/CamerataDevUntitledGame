@@ -1,8 +1,11 @@
+import re
+
 import bcrypt
-from flask import Flask, render_template, session, request, redirect, url_for
+from flask import Flask, render_template, session, request, redirect, url_for, jsonify
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, emit
-import re
+
+import game_handler
 
 app = Flask(__name__)
 app.secret_key = 'one2three4five6'  # TODO: 'SECURITY RISK' :: we need to remove this portion of code before deployment
@@ -22,6 +25,9 @@ mysql = MySQL(app)
 
 # list of active game lobbies
 game_lobbies = []
+
+# GameHnadler object
+gh = game_handler.GameHandler()
 
 
 def encrypt_password(password):
@@ -199,13 +205,109 @@ def game():
     return render_template('game.html')
 
 
+import uuid
+import multiprocessing
+
+
+def generate_match_id():
+    return str(uuid.uuid4())
+
+
+def start_instance(pipe):
+    # start the game instance and use the pipe to communicate with it
+    pass  # placeholder
+
+
+def create_match():
+    # create a unique match_id, and pass the necessary parameters to the new_match method
+    match_id = generate_match_id()  # implement this function to generate a unique match_id
+    player1 = session.get('username')
+    # player2 = None  # the second player may be added later
+
+    # create a new match
+    gh.new_match(match_id, player1)
+
+    # emit a socket event to start the game
+    socketio.emit('start_game', {'match_id': match_id})
+
+    return match_id, player1
+
+
 @app.route('/lobby')
 def lobby():
     username = session.get('username')
     if username is None:
         # redirect the user to the login page if they're not logged in
         return redirect(url_for('login'))
-    return render_template('lobby.html')
+
+    # create a new match and get the match_id and player1
+    match_id, player1 = create_match()
+
+    parent_conn, child_conn = multiprocessing.Pipe()
+
+    # start the game instance process
+    instance_process = multiprocessing.Process(target=start_instance, args=(child_conn,))
+    instance_process.start()
+
+    # start the generator process to send commands to the game instance
+    generator_process = multiprocessing.Process(target=generate, args=(parent_conn,))
+    generator_process.start()
+
+    return render_template('lobby.html', match_id=match_id)
+
+
+def generate(pipe):
+    while True:
+        # receive a command from the parent process
+        command = pipe.recv()
+
+        # send the command to the game instance
+        response = gh.send_command(command)
+
+        # send the response back to the parent process
+        pipe.send(response)
+
+
+@socketio.on('command')
+def handle_command(data):
+    match_id = data['match_id']
+    player = session['username']
+    command = data['command']
+    result = gh.command(match_id, player, command)
+    send_update(match_id, result)
+
+
+# define a function to send updates to the client
+def send_update(match_id, update):
+    socketio.emit('update', {'match_id': match_id, 'update': update})
+
+
+# define a function to receive commands from the client
+
+@app.route('/command', methods=['POST'])
+def command():
+    command = request.json['command']
+    gh.parent_conn.send(command)
+    game_state = gh.parent_conn.recv()
+    response = {'gameState': game_state}
+    return jsonify(response)
+
+
+# @app.route('/end_match/<match_id>')
+# def end_match(match_id):
+#     if gh.end_match(match_id):
+#         return 'Match ended successfully'
+#     else:
+#         return 'Match not found'
+#
+#
+# @app.route('/command/<match_id>/<player>/<command>')
+# def command(match_id, player, command):
+#     result = gh.command(match_id, player, command)
+#     if result is not None:
+#         return result
+#     else:
+#         return 'Match not found'
 
 
 @app.route('/create_new_lobby')
@@ -217,18 +319,36 @@ def create_new_lobby():
     return render_template('create_new_lobby.html')
 
 
-@socketio.on('connect')
-def handle_connect():
-    # emit the list of game lobbies to the newly connected client
-    emit('game_lobbies', game_lobbies)
-
-
+# TODO: test method to see if variables are properly getting called.
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
-    # add the new lobby to the list of game lobbies
-    game_lobbies.append({'name': data['name'], 'users': [session['username']], 'max_players': 2})
+    # find the lobby with the given name
+    lobby = next((lobby for lobby in game_lobbies if lobby['name'] == data['name']), None)
+    if lobby is None:
+        # create a new lobby with the given name and add the creator as the first player
+        lobby = {'name': data['name'], 'users': [session['username']], 'max_players': 1}
+        game_lobbies.append(lobby)
+    else:
+        # add the user to an existing lobby with the same name
+        lobby['users'].append(session['username'])
+
+    if len(lobby['users']) == lobby['max_players']:
+        # if the lobby now has two players, create a new match and start the game
+        match_id = generate_match_id()
+        player1 = lobby['users']
+        gh.new_match(match_id, player1)
+        socketio.emit('start_game', {'match_id': match_id})
+
     # emit the updated list of game lobbies to all connected clients
     emit('game_lobbies', game_lobbies, broadcast=True)
+
+
+# @socketio.on('create_lobby')
+# def handle_create_lobby(data):
+#     # add the new lobby to the list of game lobbies
+#     game_lobbies.append({'name': data['name'], 'users': [session['username']], 'max_players': 2})
+#     # emit the updated list of game lobbies to all connected clients
+#     emit('game_lobbies', game_lobbies, broadcast=True)
 
 
 @socketio.on('join_lobby')
@@ -239,10 +359,10 @@ def handle_join_lobby(data):
             if len(lobby['users']) < lobby['max_players']:  # check if lobby is full
                 lobby['users'].append(session['username'])
                 # emit the updated list of game lobbies to all connected clients
-                emit('game_lobbies', game_lobbies, broadcast=True)
+                socketio.emit('game_lobbies', game_lobbies, broadcast=True)
             else:
                 # emit a message to the client that the lobby is full
-                emit('lobby_full', {'message': 'This lobby is full.'})
+                socketio.emit('lobby_full', {'message': 'This lobby is full.'})
                 return
 
 
@@ -253,8 +373,14 @@ def handle_leave_lobby(data):
         if lobby['name'] == data['name']:
             lobby['users'].remove(session['username'])
             # emit the updated list of game lobbies to all connected clients
-            emit('game_lobbies', game_lobbies, broadcast=True)
+            socketio.emit('game_lobbies', game_lobbies, broadcast=True)
         break
+
+
+@socketio.on('connect')
+def handle_connect():
+    # emit the list of game lobbies to the newly connected client
+    socketio.emit('game_lobbies', game_lobbies)
 
 
 @socketio.on('disconnect')
@@ -264,9 +390,9 @@ def handle_disconnect():
     for lobby in game_lobbies:
         if username in lobby['users']:
             lobby['users'].remove(username)
-            emit('user_left_lobby', {'username': username}, room=lobby['name'])
+            socketio.emit('user_left_lobby', {'username': username}, room=lobby['name'])
     # emit the updated list of game lobbies to all connected clients
-    emit('game_lobbies', game_lobbies, broadcast=True)
+    socketio.emit('game_lobbies', game_lobbies, broadcast=True)
 
 
 # currently unused, saving public route for future use

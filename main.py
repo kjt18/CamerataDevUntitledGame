@@ -170,14 +170,17 @@ class Main:
         self.handler.on_render(console=self.root_console)
 
 
-def start_instance(pipe):
-    '''s = zerorpc.Server(Main())
-    s.bind("tcp://0.0.0.0:4242")
-    s.run()'''
+from multiprocessing import Process, Pipe
 
+
+def start_instance(pipe):
     c = Main()
     while True:
-        console = pipe.recv()
+        try:
+            console = pipe.recv()
+        except (EOFError, BrokenPipeError):
+            # Handle the error here
+            return
         if console == "quit":
             return
         elif console == "up":
@@ -214,5 +217,17 @@ def start_instance(pipe):
 
 
 if __name__ == "__main__":
-    start_instance()
+    parent_conn, child_conn = Pipe()
+    p = Process(target=start_instance, args=(child_conn,))
+    p.start()
+    while True:
+        command = input()
+        parent_conn.send(command)
+        if command == "quit":
+            break
+        else:
+            print(parent_conn.recv())
+
+    p.join()
+
 

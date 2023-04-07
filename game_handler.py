@@ -41,8 +41,8 @@ class GameHandler:
     def __init__(self):
         self.matches = []
 
-    def new_match(self, match_id, player1, player2):
-        players = [player1, player2]
+    def new_match(self, match_id, player1):
+        players = [player1]
         self.matches.append(Match(match_id, players))
 
     def end_match(self, match_id):
@@ -66,8 +66,8 @@ def main():
         query = str(input())
         if query.find("newmatch:") > -1:
             discard, query = query.split(':')
-            match, player1, player2 = query.split(',')
-            game_handler.new_match(match, player1, player2)
+            match, player1 = query.split(',')
+            game_handler.new_match(match, player1)
             print("Created match!")
         else:
             match, player, command = query.split(',')
