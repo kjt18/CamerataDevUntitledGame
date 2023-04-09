@@ -206,22 +206,17 @@ def game():
 
 
 import uuid
-import multiprocessing
 
 
 def generate_match_id():
     return str(uuid.uuid4())
 
 
-def start_instance(pipe):
-    # start the game instance and use the pipe to communicate with it
-    pass  # placeholder
-
-
 def create_match():
     # create a unique match_id, and pass the necessary parameters to the new_match method
     match_id = generate_match_id()  # implement this function to generate a unique match_id
     player1 = session.get('username')
+    session['match_id'] = match_id
     # player2 = None  # the second player may be added later
 
     # create a new match
@@ -235,34 +230,25 @@ def create_match():
 
 @app.route('/lobby')
 def lobby():
+    # match_id = generate_match_id()  # implement this function to generate a unique match_id
     username = session.get('username')
     if username is None:
         # redirect the user to the login page if they're not logged in
         return redirect(url_for('login'))
 
-    # create a new match and get the match_id and player1
-    match_id, player1 = create_match()
+    match_id = session['match_id']
+    player1 = session.get('username')
 
-    parent_conn, child_conn = multiprocessing.Pipe()
-
-    # start the game instance process
-    instance_process = multiprocessing.Process(target=start_instance, args=(child_conn,))
-    instance_process.start()
-
-    # start the generator process to send commands to the game instance
-    generator_process = multiprocessing.Process(target=generate, args=(parent_conn,))
-    generator_process.start()
-
-    return render_template('lobby.html', match_id=match_id)
+    return render_template('lobby.html', match_id=match_id, player1=player1)
 
 
 def generate(pipe):
     while True:
         # receive a command from the parent process
-        command = pipe.recv()
+        cmd = pipe.recv()
 
         # send the command to the game instance
-        response = gh.send_command(command)
+        response = gh.command(cmd)
 
         # send the response back to the parent process
         pipe.send(response)
@@ -270,8 +256,8 @@ def generate(pipe):
 
 @socketio.on('command')
 def handle_command(data):
-    match_id = data['match_id']
-    player = session['username']
+    match_id = data.get('match_id')
+    player = session.get('username')
     command = data['command']
     result = gh.command(match_id, player, command)
     send_update(match_id, result)
@@ -286,9 +272,8 @@ def send_update(match_id, update):
 
 @app.route('/command', methods=['POST'])
 def command():
-    command = request.json['command']
-    gh.parent_conn.send(command)
-    game_state = gh.parent_conn.recv()
+    cmd = request.json['command']
+    game_state = gh.command(cmd)
     response = {'gameState': game_state}
     return jsonify(response)
 
@@ -336,7 +321,7 @@ def handle_create_lobby(data):
         # if the lobby now has two players, create a new match and start the game
         match_id = generate_match_id()
         player1 = lobby['users']
-        gh.new_match(match_id, player1)
+        # gh.new_match(match_id, player1)
         socketio.emit('start_game', {'match_id': match_id})
 
     # emit the updated list of game lobbies to all connected clients

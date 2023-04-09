@@ -58,13 +58,38 @@
 <section id="cards1" class="container py-5 mt-5">
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <p>Welcome to the game lobby, {username}!</p>
-            <p>Match ID: {match_id}</p>
-            <p>Player 1: {player1}</p>
+            <p>Welcome to the game lobby, {{player1}}!</p>
+            <p>Match ID: {{match_id}}</p>
+            <p>Player 1: {{player1}}</p>
             <div id="game-state"></div>
             <form>
                 <input type="text" id="command-input">
                 <button type="button" onclick="sendCommand()">Send</button>
+            </form>
+        </div>
+    </div>
+</section>
+<section id="cards2" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2>Create a New Game Lobby</h2>
+            <form id="create-lobby-form">
+                <label for="lobby-name-input">Lobby Name:</label>
+                <input type="text" id="lobby-name-input">
+                <button type="submit">Create Lobby</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section id="cards3" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2>Join an Existing Game Lobby</h2>
+            <form id="join-lobby-form">
+                <label for="join-lobby-name-input">Lobby Name:</label>
+                <input type="text" id="join-lobby-name-input">
+                <button type="submit">Join Lobby</button>
             </form>
         </div>
     </div>
@@ -95,7 +120,7 @@
       }
 
       const matchId = generateMatchId(); // implement this function to generate a unique matchId
-      const player1 = username;
+      const player1 = lobby.users.join(', ');
       const player2 = null; // the second player may be added later
 
       // create a new match
@@ -104,7 +129,19 @@
       // emit a socket event to start the game
       socket.emit('start_game', { matchId });
 
-      window.location.href = '/create_new_lobby';
+      // Update the HTML with the new values
+      document.getElementById('cards1').innerHTML = `
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <p>Welcome to the game lobby, ${{username}}!</p>
+            <p>Match ID: ${{matchId}}</p>
+            <p>Player 1: ${{player1}}</p>
+            <div id="game-state"></div>
+            <form>
+                <input type="text" id="command-input">
+                <button type="button" onclick="sendCommand()">Send</button>
+            </form>
+        </div>
+      `;
     }
 
     function handleCreateLobby(data) {
