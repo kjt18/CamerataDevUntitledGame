@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from components.ai import BaseAI
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from game_map import GameMap
@@ -13,6 +14,7 @@ class TestActor(unittest.TestCase):
         self.ai = Mock(spec=BaseAI)
         self.fighter = Mock(spec=Fighter)
         self.inventory = Mock(spec=Inventory)
+        self.equipment = Mock(spec=Equipment)
 
     def test_actor_creation(self):
         actor = Actor(
@@ -24,6 +26,7 @@ class TestActor(unittest.TestCase):
             ai_cls=self.ai,
             fighter=self.fighter,
             inventory=self.inventory,
+            equipment=self.equipment,
         )
 
         self.assertEqual(actor.x, 1)
@@ -46,6 +49,7 @@ class TestActor(unittest.TestCase):
             ai_cls=self.ai,
             fighter=self.fighter,
             inventory=self.inventory,
+            equipment=self.equipment,
         )
 
         self.assertTrue(actor.is_alive)
