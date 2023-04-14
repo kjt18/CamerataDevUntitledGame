@@ -4,25 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "~=2.2.3"
-tcod = "~=15.0.0"
+flask = "*"
+tcod = "*"
 dependency-injector = "*"
-mysql = "~=0.0.3"
-mysql-connector-python = "*"
-pytest = "*"
-bcrypt = "~=4.0.1"
-flask-socketio = "*"
-flask-mysqldb = "*"
-bootstrap-flask = "*"
-azure-functions = "*"
-numpy = "~=1.24.2"
-flaskapp = "~=1.0.5"
-zerorpc = "~=0.6.3"
-requests = "~=2.28.2"
-
+pynput = "*"
+zerorpc = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.2"
+python_version = "3.10"
+python_full_version = "3.10.7"
