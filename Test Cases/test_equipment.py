@@ -38,7 +38,6 @@ class EquippableTests(unittest.TestCase):
         equipment.unequip_from_slot("weapon", testDagger)
         self.assertIsNone(equipment.weapon)
 
-        self.mockFighter
     def test_armor(self):
         # Instantiate an equippable item for testing
         testLeatherArmor = entity_factories.leather_armor

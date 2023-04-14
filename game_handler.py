@@ -7,6 +7,7 @@ class Instance:
 
     def __init__(self, name):
         self.name = name
+        self.waitingForOpponent = False
         parent_conn, child_conn = multiprocessing.Pipe(duplex=True)
         self.pipe = parent_conn
         p = multiprocessing.Process(target=start_instance, args=(child_conn,))
@@ -16,14 +17,17 @@ class Instance:
         self.pipe.send(command)
         return self.pipe.recv()
 
+    def set_waiting(self, waiting_flag):
+        #Set to True somewhere when player goes downstairs
+        self.waitingForOpponent = waiting_flag
 
 # TODO add shared seed support in init
 class Match:
-
     def __init__(self, match_id, players):
         self.match_id = match_id
         self.players = players
         self.instances = []
+        self.players_downstairs = []
         for player in players:
             self.instances.append(Instance(player))
 
@@ -35,6 +39,17 @@ class Match:
         else:
             return "Player not in match."
 
+    def downstairs_players(self, player):
+        #Add player that went downstairs to downstairs player list
+        if player in self.players and player not in self.players_downstairs:
+            self.players_downstairs.append(player)
+            if len(self.players_downstairs) == len(self.players):
+                #When all players are downstairs, flag is False, if only 1 then flag is True
+                for instance in self.instances:
+                    instance.waitingForOpponent = False
+            else:
+                for instance in self.instances:
+                    instance.waitingForOpponent = True
 
 # TODO add flags for finished game and winner
 class GameHandler:
@@ -58,7 +73,18 @@ class GameHandler:
                 return match.command(player, command)
         return None
 
+    def update_downstairs_players(self, match_id, player):
+        for match in self.matches:
+            if match.match_id == match_id:
+                match.downstairs_players(player)
+                break
 
+    def waiting_screen(self, match_id, player):
+        for match in self.matches:
+            if match.match_id == match_id:
+                for match.players_downstairs in self.matches:
+                    if player in match.players_downstairs:
+                        print("waiting screen")
 #
 def main():
     game_handler = GameHandler()
