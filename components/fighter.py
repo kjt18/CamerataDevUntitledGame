@@ -58,7 +58,8 @@ class Fighter(BaseComponent):
             death_message_color = color.player_die
             # self.engine.event_handler = GameOverEventHandler(self.engine)
         else:
-            death_message = f"{self.parent.name} is dead!"
+            self.engine.award_points(self.parent.points)
+            death_message = f"{self.parent.name} is dead! +{self.parent.points} points!"
             death_message_color = color.enemy_die
 
         self.parent.char = "%"

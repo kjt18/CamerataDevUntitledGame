@@ -50,7 +50,8 @@ class PickupAction(Action):
                 item.parent = self.entity.inventory
                 inventory.items.append(item)
 
-                self.engine.message_log.add_message(f"You picked up the {item.name}!")
+                self.engine.award_points(item.points)
+                self.engine.message_log.add_message(f"You picked up the {item.name}! +{item.points} points!")
                 return
 
         raise exceptions.Impossible("There is nothing here to pick up.")
@@ -106,6 +107,7 @@ class TakeStairsAction(Action):
         Take the stairs, if any exist at the entity's location.
         """
         if (self.entity.x, self.entity.y) == self.engine.game_map.downstairs_location:
+            self.engine.total_points_in_level()
             self.engine.game_world.generate_floor()
             self.engine.message_log.add_message(
                 "You descend the staircase.", color.descend

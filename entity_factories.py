@@ -24,6 +24,7 @@ orc = Actor(
     equipment=Equipment(),
     fighter=Fighter(hp=11, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
+    points=200,
 )
 troll = Actor(
     char="T",
@@ -33,6 +34,7 @@ troll = Actor(
     equipment=Equipment(),
     fighter=Fighter(hp=20, base_defense=2, base_power=5),
     inventory=Inventory(capacity=0),
+    points=300,
 )
 skeleton = Actor(
     char="S",
@@ -42,39 +44,44 @@ skeleton = Actor(
     equipment=Equipment(),
     fighter=Fighter(hp=5, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
+    points=100,
 )
 confusion_scroll = Item(
     char="~",
     color=(207, 63, 255),
     name="Confusion Scroll",
     consumable=consumable.ConfusionConsumable(number_of_turns=10),
+    points=150
 )
 fireball_scroll = Item(
     char="~",
     color=(255, 0, 0),
     name="Fireball Scroll",
     consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
+    points=150
 )
 health_potion = Item(
     char="g",
     color=(42, 252, 10),
     name="Health Potion",
     consumable=consumable.HealingConsumable(amount=4),
+    points=50
 )
 lightning_scroll = Item(
     char="~",
     color=(255, 255, 0),
     name="Lightning Scroll",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
+    points=150
 )
 dagger = Item(
-    char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
+    char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger(), points=175
 )
 sword = Item(
-    char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword()
+    char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword(), points=225
 )
 axe = Item(
-    char="/", color=(0, 191, 255), name="Axe", equippable=equippable.Axe()
+    char="/", color=(0, 191, 255), name="Axe", equippable=equippable.Axe(), points=250
 )
 # needle_of_fate = Item(char="/", color=(0, 191, 255), name="NeedleOfFate", equippable=equippable.NeedleOfFate()
 # )
@@ -84,9 +91,10 @@ leather_armor = Item(
     color=(139, 69, 19),
     name="Leather Armor",
     equippable=equippable.LeatherArmor(),
+    points=75
 )
 chain_mail = Item(
-    char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail()
+    char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail(), points=215
 )
 # needle_of_fate = Item(
 #     char="n",
