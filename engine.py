@@ -83,6 +83,9 @@ class Engine:
     def get_points(self) -> int:
         return self.point_counter + self.num_explored
 
+    def get_total_points(self) -> int:
+        return self.total_points
+
     def total_points_in_level(self) ->None:
         turn_bonus = 500 - self.num_turns
         if turn_bonus > 0:
