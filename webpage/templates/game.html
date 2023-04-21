@@ -49,40 +49,30 @@
         {% else %}
         <a class="nav-link btn btn-primary text-light" href="/login">Login</a>
         {% endif %}
-
     </div>
 </nav>
 
 <section id="cards1" class="container py-5 mt-5">
-    <h1 class="text-center text-light">Lobby List</h1>
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <ul id="game-lobbies">
-<!--                {% for lobby in game_lobbies %}-->
-<!--                <li>-->
-<!--                    <span>{{ lobby['name'] }}</span>-->
-<!--                    <span>({{ len(lobby['users']) }}/{{ lobby['max_players'] }})</span>-->
-<!--                    <button class="btn btn-primary join-lobby-btn" data-name="{{ lobby['name'] }}">Join</button>-->
-<!--                </li>-->
-<!--                {% endfor %}-->
-            </ul>
-        </div>
-    </div>
-
-</section>
-
-<section id="cards3" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Join an Existing Game Lobby</h2>
-            <form id="join-lobby-form">
-                <label for="join-lobby-name-input">Lobby Name:</label>
-                <input type="text" id="join-lobby-name-input">
-                <button type="submit">Join Lobby</button>
-            </form>
+            <h1>Lobby List</h1>
+            <div class="d-flex my-3">
+                <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+                    <ul id="game-lobbies">
+                        {% for lobby in game_lobbies %}
+                            <li>
+                                <span>{{ lobby['name'] }}</span>
+                                <span>({{ len(lobby['users']) }}/{{ lobby['max_players'] }})</span>
+                                <button class="btn btn-primary join-lobby-btn" data-name="{{ lobby['name'] }}">Join</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
 
 
 <!--test to join a public lobby-->
@@ -94,7 +84,7 @@
                     <h4 class="card-title font-weight-bold">Public Lobby</h4>
                     <p>add description of public games and quick play feature</p>
                     <button class="btn btn-light btn-hover"
-                            onclick="window.location.href='{{ url_for('create_new_lobby') }}'">
+                            onclick="window.location.href='{{ url_for('lobby') }}'">
                         Create Public Lobby
                     </button>
                 </div>
@@ -133,7 +123,6 @@
     </div>
 </footer>
 <!-- Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -146,42 +135,10 @@
     socket.on('game_lobbies', function(data) {
         $('#game-lobbies').empty();
         $.each(data, function(index, lobby) {
-            $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', '));
+            $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', ') + lobby.name);
         });
     });
 
-    // handle joining an existing game lobby
-    $('#join-lobby-form').submit(function(event) {
-        event.preventDefault();
-        var name = $('#join-lobby-name-input').val();
-        var username = $('#join-username-input').val();
-        socket.emit('join_lobby', {'name': name, 'username': username});
-        $('#join-lobby-name-input').val('');
-        $('#join-username-input').val('');
-    });
-
-
-</script>
-<script>
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-
-
-</script>
-<script>
-    window.addEventListener('scroll', function() {
-        var modal = document.getElementById('myModal');
-        var modalTop = modal.getBoundingClientRect().top;
-        var windowHeight = window.innerHeight;
-        if (modalTop < windowHeight) {
-            // Add class to show modal
-            modal.classList.add('fade-in');
-        } else {
-            // Remove class to hide modal
-            modal.classList.remove('fade-in');
-        }
-    });
 
 </script>
 </body>
