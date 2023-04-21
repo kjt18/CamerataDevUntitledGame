@@ -42,5 +42,4 @@ def process_data():
 
 # Run the server
 if __name__ == '__main__':
-    subprocess.run("python", "main.py")
     app.run(host='127.0.0.1', port=5000, debug=True)
