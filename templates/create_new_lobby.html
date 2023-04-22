@@ -61,17 +61,29 @@
             <span id="lobby-name"></span>
             <div>
                 Users list:
-            <ul>
-                <li>
-                    <span id="lobby-users"></span>
-                </li>
-            </ul></div>
-<!--            <div id="lobby-canvas" class="container py-5 mt-5">-->
-<!--                <div class="d-flex my-3">-->
-<!--                    <canvas id="game-canvas" width="600" height="800"></canvas>-->
-<!--                </div>-->
+                <ul>
+                    <li>
+                        <span id="lobby-users"></span>
+                    </li>
+                </ul>
             </div>
+            <div id="lobby-canvas" class="container py-5 mt-5">
+                <div class="d-flex my-3">
+                    <canvas id="game-canvas" width="600" height="800">
+                        {{ output }}
+                    </canvas>
+                </div>
+<!--            <div class="container">-->
+<!--                <h1>Server Output</h1>-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        {{ output }}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
+    </div>
+    </div>
     </div>
 </section>
 
@@ -172,6 +184,7 @@
         // handle updating the UI for the user leaving all lobbies
         $('.leave-lobby-btn').closest('li').remove();
     });
+
 
 
 </script>

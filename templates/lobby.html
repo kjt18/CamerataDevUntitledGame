@@ -66,6 +66,13 @@
                 <input type="text" id="command-input">
                 <button type="button" onclick="sendCommand()">Send</button>
             </form>
+            <div id="lobby-canvas" class="container py-5 mt-5">
+                <div class="d-flex my-3">
+                    <canvas id="game-canvas" width="600" height="800">
+                        {{ output }}
+                    </canvas>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -130,7 +137,8 @@
       socket.emit('start_game', { matchId });
 
       // Update the HTML with the new values
-      document.getElementById('cards1').innerHTML = `
+      document.getElementById('cards1').innerHTML =
+      `
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
             <p>Welcome to the game lobby, ${{username}}!</p>
             <p>Match ID: ${{matchId}}</p>
@@ -155,7 +163,7 @@
         gameLobbies.push({
           name,
           users: [username],
-          maxPlayers: 1
+          maxPlayers: 2
         });
       } else {
         // add the user to an existing lobby with the same name
@@ -241,6 +249,8 @@
         var response = JSON.parse(xhr.responseText);
         document.getElementById("game-state").innerHTML = response.gameState;
     };
+
+
 
 </script>
 </body>

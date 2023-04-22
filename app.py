@@ -230,13 +230,13 @@ def create_match():
 
 @app.route('/lobby')
 def lobby():
-    # match_id = generate_match_id()  # implement this function to generate a unique match_id
+    match_id = generate_match_id()  # implement this function to generate a unique match_id
     username = session.get('username')
     if username is None:
         # redirect the user to the login page if they're not logged in
         return redirect(url_for('login'))
 
-    match_id = session['match_id']
+    # match_id = session['match_id']
     player1 = session.get('username')
 
     return render_template('lobby.html', match_id=match_id, player1=player1)
@@ -268,9 +268,16 @@ def send_update(match_id, update):
     socketio.emit('update', {'match_id': match_id, 'update': update})
 
 
+# @app.route('/lobby.html')
+# def server_output():
+#     # Generate server output
+#     output =
+#     return render_template('lobby.html', output=output)
+
+
 # define a function to receive commands from the client
 
-@app.route('/command', methods=['POST'])
+@app.route('/lobby', methods=['POST'])
 def command():
     cmd = request.json['command']
     game_state = gh.command(cmd)
@@ -368,16 +375,16 @@ def handle_connect():
     socketio.emit('game_lobbies', game_lobbies)
 
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    username = session['username']
-    # remove the user from any game lobbies they were in
-    for lobby in game_lobbies:
-        if username in lobby['users']:
-            lobby['users'].remove(username)
-            socketio.emit('user_left_lobby', {'username': username}, room=lobby['name'])
-    # emit the updated list of game lobbies to all connected clients
-    socketio.emit('game_lobbies', game_lobbies, broadcast=True)
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     username = session['username']
+#     # remove the user from any game lobbies they were in
+#     for lobby in game_lobbies:
+#         if username in lobby['users']:
+#             lobby['users'].remove(username)
+#             socketio.emit('user_left_lobby', {'username': username}, room=lobby['name'])
+#     # emit the updated list of game lobbies to all connected clients
+#     socketio.emit('game_lobbies', game_lobbies, broadcast=True)
 
 
 # currently unused, saving public route for future use
