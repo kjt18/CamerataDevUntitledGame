@@ -277,10 +277,24 @@ def send_update(match_id, update):
 
 # define a function to receive commands from the client
 
-@app.route('/lobby', methods=['POST'])
+@app.route('/command', methods=['POST'])
 def command():
     cmd = request.json['command']
-    game_state = gh.command(cmd)
+    player = session['username']
+    if session.get('match_id') is None:
+        for lobby in game_lobbies:
+            found = False
+            for user in lobby['users']:
+                if user == session['username']:
+                    session['match_id'] = lobby['match_id']
+                    found = True
+                    break
+            if found:
+                break
+    match_id = session['match_id']
+    game_state = gh.command(match_id, player, cmd)
+    print(game_state)
+    print(player)
     response = {'gameState': game_state}
     return jsonify(response)
 
@@ -318,15 +332,18 @@ def handle_create_lobby(data):
     lobby = next((lobby for lobby in game_lobbies if lobby['name'] == data['name']), None)
     if lobby is None:
         # create a new lobby with the given name and add the creator as the first player
-        lobby = {'name': data['name'], 'users': [session['username']], 'max_players': 1}
+        match_id = generate_match_id()
+        lobby = {'name': data['name'], 'users': [session['username']], 'max_players': 1, 'match_id': match_id}
         game_lobbies.append(lobby)
+        gh.new_match(match_id, session['username'])
+
     else:
         # add the user to an existing lobby with the same name
         lobby['users'].append(session['username'])
 
     if len(lobby['users']) == lobby['max_players']:
         # if the lobby now has two players, create a new match and start the game
-        match_id = generate_match_id()
+        #match_id = generate_match_id()
         player1 = lobby['users']
         # gh.new_match(match_id, player1)
         socketio.emit('start_game', {'match_id': match_id})
