@@ -205,13 +205,13 @@ def start_instance(pipe):
             pipe.send(c.descend())
         elif console == "inventory":
             pipe.send(c.inventory())
-            console = pipe.recv()
+            console = str(input())
             while True:
-                if len(console) > 1 and ord("a") <= ord(console) <= ord("z"):
+                if len(console) < 1 and ord("a") <= ord(console) <= ord("z"):
                     pipe.send(c.inventory_key(console))
                     break
                 else:
-                    pipe.send("input only one lowercase letter" + len(console))
+                    pipe.send("input only one lowercase letter")
         else:
             pipe.send("invalid input")
 

@@ -8,7 +8,6 @@ body {
     min-height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: "Lucida Console", "Courier New", monospace;
 }
 .custom-nav {
     opacity: 80%;
