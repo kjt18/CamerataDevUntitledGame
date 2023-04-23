@@ -268,12 +268,6 @@ def send_update(match_id, update):
     socketio.emit('update', {'match_id': match_id, 'update': update})
 
 
-# @app.route('/lobby.html')
-# def server_output():
-#     # Generate server output
-#     output =
-#     return render_template('lobby.html', output=output)
-
 
 # define a function to receive commands from the client
 
@@ -298,22 +292,6 @@ def command():
     response = {'gameState': game_state}
     return jsonify(response)
 
-
-# @app.route('/end_match/<match_id>')
-# def end_match(match_id):
-#     if gh.end_match(match_id):
-#         return 'Match ended successfully'
-#     else:
-#         return 'Match not found'
-#
-#
-# @app.route('/command/<match_id>/<player>/<command>')
-# def command(match_id, player, command):
-#     result = gh.command(match_id, player, command)
-#     if result is not None:
-#         return result
-#     else:
-#         return 'Match not found'
 
 
 @app.route('/create_new_lobby')
@@ -352,13 +330,6 @@ def handle_create_lobby(data):
     emit('game_lobbies', game_lobbies, broadcast=True)
 
 
-# @socketio.on('create_lobby')
-# def handle_create_lobby(data):
-#     # add the new lobby to the list of game lobbies
-#     game_lobbies.append({'name': data['name'], 'users': [session['username']], 'max_players': 2})
-#     # emit the updated list of game lobbies to all connected clients
-#     emit('game_lobbies', game_lobbies, broadcast=True)
-
 
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
@@ -392,38 +363,18 @@ def handle_connect():
     socketio.emit('game_lobbies', game_lobbies)
 
 
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     username = session['username']
-#     # remove the user from any game lobbies they were in
-#     for lobby in game_lobbies:
-#         if username in lobby['users']:
-#             lobby['users'].remove(username)
-#             socketio.emit('user_left_lobby', {'username': username}, room=lobby['name'])
-#     # emit the updated list of game lobbies to all connected clients
-#     socketio.emit('game_lobbies', game_lobbies, broadcast=True)
-
 
 # currently unused, saving public route for future use
-@app.route('/public')
-def public():
-    return render_template('public.html')
+# @app.route('/public')
+# def public():
+#     return render_template('public.html')
+#
+#
+# # currently unused, saving private route for future use
+# @app.route('/private')
+# def private():
+#     return render_template('private.html')
 
-
-# currently unused, saving private route for future use
-@app.route('/private')
-def private():
-    return render_template('private.html')
-
-
-# saved for testing purposes
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
-# Start the app
-# save for now, pycharm UI doesn't like this very much.
-# if __name__ == '__main__':
-#     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
 
 if __name__ == '__main__':
     socketio.run(app, host="127.0.0.1", port=5000)
