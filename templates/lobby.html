@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Camerata Developments">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Camerata Developments</title>
+    <meta name="description" content="lobby page">
+    <!-- favicon goes here -->
+    <!-- <link rel="icon" type="" href=""> -->
+    <!--add stylesheets here-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
+</head>
+
+<body style="background-color:black">
+<!--navbar template, change routing to pages-->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav" style="background-color:black">
+    <a class="navbar-brand mr-auto" href="/">Camerata Developments&nbsp;&nbsp;</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+            </li>
+        </ul>
+        {% if session.username %}
+        <div class="d-flex justify-content-between">
+            <a class="text-light"><b>{{ session.username }}</b>&nbsp;&nbsp;</a>
+            <form method="post" action="{{ url_for('logout') }}">
+                <button type="submit" class="nav-link btn btn-primary text-light">Logout</button>
+            </form>
+        </div>
+        {% else %}
+        <a class="nav-link btn btn-primary text-light" href="/login">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<section id="cards1" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <p>Welcome to the game lobby, {{player1}}!</p>
+            <p>Match ID: {{match_id}}</p>
+            <p>Player 1: {{player1}}</p>
+            <div id="game-state"></div>
+            <form>
+                <input type="text" id="command-input">
+                <button type="button" onclick="sendCommand()">Send</button>
+            </form>
+            <div id="lobby-canvas" class="container py-5 mt-5">
+                <div class="d-flex my-3">
+                    <canvas id="game-canvas" width="600" height="800">
+                        {{ output }}
+                    </canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="cards2" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2>Create a New Game Lobby</h2>
+            <form id="create-lobby-form">
+                <label for="lobby-name-input">Lobby Name:</label>
+                <input type="text" id="lobby-name-input">
+                <button type="submit">Create Lobby</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section id="cards3" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2>Join an Existing Game Lobby</h2>
+            <form id="join-lobby-form">
+                <label for="join-lobby-name-input">Lobby Name:</label>
+                <input type="text" id="join-lobby-name-input">
+                <button type="submit">Join Lobby</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
+<script>
+    const socket = io.connect(`http://${document.domain}:${location.port}`);
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+    });
+
+    function createNewLobby() {
+      const username = sessionStorage.getItem('username');
+
+      if (!username) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const matchId = generateMatchId(); // implement this function to generate a unique matchId
+      const player1 = lobby.users.join(', ');
+      const player2 = null; // the second player may be added later
+
+      // create a new match
+      gameHandler.newMatch(matchId, player1, player2);
+
+      // emit a socket event to start the game
+      socket.emit('start_game', { matchId });
+
+      // Update the HTML with the new values
+      document.getElementById('cards1').innerHTML =
+      `
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <p>Welcome to the game lobby, ${{username}}!</p>
+            <p>Match ID: ${{matchId}}</p>
+            <p>Player 1: ${{player1}}</p>
+            <div id="game-state"></div>
+            <form>
+                <input type="text" id="command-input">
+                <button type="button" onclick="sendCommand()">Send</button>
+            </form>
+        </div>
+      `;
+    }
+
+    function handleCreateLobby(data) {
+      const { name, username } = data;
+
+      // find the lobby with the given name
+      const lobby = gameLobbies.find((lobby) => lobby.name === name);
+
+      if (!lobby) {
+        // create a new lobby with the given name and add the creator as the first player
+        gameLobbies.push({
+          name,
+          users: [username],
+          maxPlayers: 2
+        });
+      } else {
+        // add the user to an existing lobby with the same name
+        lobby.users.push(username);
+      }
+
+      // check if the lobby now has two players, create a new match and start the game
+      const lobbyIndex = gameLobbies.findIndex((lobby) => lobby.name === name);
+
+      if (gameLobbies[lobbyIndex].users.length === gameLobbies[lobbyIndex].maxPlayers) {
+        const matchId = generateMatchId();
+        const [player1] = gameLobbies[lobbyIndex].users;
+
+        gameHandler.newMatch(matchId, player1, player2);
+        socket.emit('start_game', { matchId });
+      }
+
+      // emit the updated list of game lobbies to all connected clients
+      socket.emit('game_lobbies', gameLobbies);
+    }
+
+    // handle receiving the updated list of game lobbies
+    socket.on('game_lobbies', (data) => {
+      const gameLobbiesElement = document.getElementById('game-lobbies');
+      gameLobbiesElement.innerHTML = '';
+
+      data.forEach((lobby) => {
+        const lobbyName = lobby.name;
+        const lobbyUsers = lobby.users.join(', ');
+
+        lobby.users.forEach((user) => {
+          const username = user.username;
+          const listItem = document.createElement('li');
+          listItem.textContent = `${lobbyName}: ${lobbyUsers} `;
+          const leaveLobbyBtn = document.createElement('button');
+          leaveLobbyBtn.classList.add('leave-lobby-btn');
+          leaveLobbyBtn.dataset.lobbyName = lobbyName;
+          leaveLobbyBtn.dataset.username = username;
+          leaveLobbyBtn.textContent = 'Leave';
+          listItem.appendChild(leaveLobbyBtn);
+          gameLobbiesElement.appendChild(listItem);
+        });
+      });
+    });
+
+    // handle creating a new game lobby
+    const createLobbyForm = document.getElementById('create-lobby-form');
+
+    createLobbyForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('lobby-name-input').value;
+      const username = document.getElementById('username-input').value;
+      socket.emit('create_lobby', { name, username });
+    });
+
+    // handle joining an existing game lobby
+    $('#join-lobby-form').submit(function(event) {
+        event.preventDefault();
+        var name = $('#join-lobby-name-input').val();
+        var username = $('#join-username-input').val();
+        socket.emit('join_lobby', {'name': name, 'username': username});
+        $('#join-lobby-name-input').val('');
+        $('#join-username-input').val('');
+    });
+
+    function sendCommand() {
+        var input = document.getElementById("command-input").value;
+        var xhr = new XMLHttpRequest();
+        var player = '{{player1}}'
+        xhr.open("POST", "/command");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({command: input, player: player, matchid: 'test'}));
+        xhr.onload = function() {
+            var response = JSON.parse(xhr.responseText);
+            document.getElementById("game-state").innerHTML = response.gameState;
+        };
+    };
+
+
+
+</script>
+</body>
+</html>

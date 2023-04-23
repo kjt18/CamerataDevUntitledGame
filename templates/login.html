@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Camerata Developments">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Camerata Developments</title>
+    <meta name="description" content="login page">
+    <!-- favicon goes here -->
+    <!-- <link rel="icon" type="" href=""> -->
+    <!--add stylesheets here-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='./css/index.css') }}">
+</head>
+<body style="background-color:black">
+<!--navbar template, change routing to pages-->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav" style="background-color:black">
+    <a class="navbar-brand mr-auto" href="/">Camerata Developments&nbsp;&nbsp;</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
+            </li>
+            <li>
+                <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+            </li>
+        </ul>
+    </div>
+    </div>
+</nav>
+<section id="cards" class="container py-5 mt-5">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+            <h2 class="text-white">Login</h2>
+            <br>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username" class="text-white">Username:</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="text-white">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</section>
+<section id="cards2" class="container py-5">
+  <div class="d-flex my-3">
+    <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
+      <h2 class="text-white text-center">Need an account?</h2>
+      <br>
+      <div class="text-center"> <!-- Added text-center class -->
+        <a href="/register" class="btn btn-outline-secondary btn-lg border-secondary text-light bg-danger font-weight-bold">Create Account</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
