@@ -73,16 +73,16 @@
                         {{ output }}
                     </canvas>
                 </div>
-<!--            <div class="container">-->
-<!--                <h1>Server Output</h1>-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        {{ output }}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
+                <!--            <div class="container">-->
+                <!--                <h1>Server Output</h1>-->
+                <!--                <div class="card">-->
+                <!--                    <div class="card-body">-->
+                <!--                        {{ output }}-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <!--            </div>-->
+            </div>
         </div>
-    </div>
     </div>
     </div>
 </section>
@@ -185,8 +185,15 @@
         $('.leave-lobby-btn').closest('li').remove();
     });
 
+</script>
 
-
+<script>
+  const form = document.getElementById('create-lobby-form');
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const lobbyName = document.getElementById('lobby-name-input').value;
+    window.location.href = '{{ url_for('lobby') }}';
+  });
 </script>
 </body>
 </html>
