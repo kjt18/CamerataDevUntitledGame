@@ -228,6 +228,15 @@ def create_match():
     return match_id, player1
 
 
+@app.route('/create_new_lobby')
+def create_new_lobby():
+    username = session.get('username')
+    if username is None:
+        # redirect the user to the login page if they're not logged in
+        return redirect(url_for('login'))
+    return render_template('create_new_lobby.html')
+
+
 @app.route('/lobby')
 def lobby():
     match_id = generate_match_id()  # implement this function to generate a unique match_id
@@ -293,16 +302,6 @@ def command():
     return jsonify(response)
 
 
-
-@app.route('/create_new_lobby')
-def create_new_lobby():
-    username = session.get('username')
-    if username is None:
-        # redirect the user to the login page if they're not logged in
-        return redirect(url_for('login'))
-    return render_template('create_new_lobby.html')
-
-
 # TODO: test method to see if variables are properly getting called.
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
@@ -311,7 +310,7 @@ def handle_create_lobby(data):
     if lobby is None:
         # create a new lobby with the given name and add the creator as the first player
         match_id = generate_match_id()
-        lobby = {'name': data['name'], 'users': [session['username']], 'max_players': 1, 'match_id': match_id}
+        lobby = {'name': data['name'], 'users': [session['username']], 'max_players': 2, 'match_id': match_id}
         game_lobbies.append(lobby)
         gh.new_match(match_id, session['username'])
 
@@ -330,7 +329,6 @@ def handle_create_lobby(data):
     emit('game_lobbies', game_lobbies, broadcast=True)
 
 
-
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
     # find the game lobby by name and add the user to it
@@ -339,11 +337,32 @@ def handle_join_lobby(data):
             if len(lobby['users']) < lobby['max_players']:  # check if lobby is full
                 lobby['users'].append(session['username'])
                 # emit the updated list of game lobbies to all connected clients
-                socketio.emit('game_lobbies', game_lobbies, broadcast=True)
+                socketio.emit('game_lobbies', game_lobbies)
             else:
                 # emit a message to the client that the lobby is full
                 socketio.emit('lobby_full', {'message': 'This lobby is full.'})
                 return
+
+
+@socketio.on('join_match')
+def handle_join_match(data):
+    match_id = data['match_id']
+    player2 = data['player2']
+    lobby = next((lobby for lobby in game_lobbies if lobby['match_id'] == match_id), None)
+
+    if lobby is not None and len(lobby['users']) < lobby['max_players']:
+        # add the player to the match
+        success = game_handler.join_match(match_id, player2)
+        if success:
+            # emit a message to the clients that the player has joined the match
+            socketio.emit('player_joined_match', {'match_id': match_id, 'player2': player2})
+        else:
+            # emit a message to the client that the match is full or does not exist
+            socketio.emit('unable_to_join_match', {'match_id': match_id, 'player2': player2})
+    else:
+        # emit a message to the client that the match is full or does not exist
+        socketio.emit('unable_to_join_match', {'match_id': match_id, 'player2': player2})
+
 
 
 @socketio.on('leave_lobby')
@@ -361,7 +380,6 @@ def handle_leave_lobby(data):
 def handle_connect():
     # emit the list of game lobbies to the newly connected client
     socketio.emit('game_lobbies', game_lobbies)
-
 
 
 # currently unused, saving public route for future use

@@ -58,6 +58,16 @@ class GameHandler:
                 return match.command(player, command)
         return None
 
+    def join_match(self, match_id, player2):
+        for match in self.matches:
+            if match.match_id == match_id:
+                if len(match.players) < 2:
+                    match.players.append(player2)
+                    return True
+                else:
+                    return False
+        return False
+
 
 #
 def main():

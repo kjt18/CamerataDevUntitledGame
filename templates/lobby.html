@@ -60,41 +60,22 @@
                 <input type="text" id="command-input">
                 <button type="button" onclick="sendCommand()">Send</button>
             </form>
-            <div id="lobby-canvas" class="container py-5 mt-5">
-                <div class="d-flex my-3">
-                    <canvas id="game-canvas" width="600" height="800">
-                        {{ output }}
-                    </canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section id="cards2" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Create a New Game Lobby</h2>
-            <form id="create-lobby-form">
-                <label for="lobby-name-input">Lobby Name:</label>
-                <input type="text" id="lobby-name-input">
-                <button type="submit">Create Lobby</button>
-            </form>
         </div>
     </div>
 </section>
 
-<section id="cards3" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Join an Existing Game Lobby</h2>
-            <form id="join-lobby-form">
-                <label for="join-lobby-name-input">Lobby Name:</label>
-                <input type="text" id="join-lobby-name-input">
-                <button type="submit">Join Lobby</button>
-            </form>
-        </div>
-    </div>
-</section>
+<!--<section id="cards3" class="container py-5 mt-5">-->
+<!--    <div class="d-flex my-3">-->
+<!--        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">-->
+<!--            <h2>Join an Existing Game Lobby</h2>-->
+<!--            <form id="join-lobby-form">-->
+<!--                <label for="join-lobby-name-input">Lobby Name:</label>-->
+<!--                <input type="text" id="join-lobby-name-input">-->
+<!--                <button type="submit">Join Lobby</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -235,8 +216,6 @@
             document.getElementById("game-state").innerHTML = response.gameState;
         };
     };
-
-
 
 </script>
 </body>

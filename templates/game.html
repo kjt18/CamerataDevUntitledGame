@@ -84,7 +84,6 @@
     </div>
 </section>
 
-
 <!--test to join a public lobby-->
 <div class="container">
     <div class="row mx-auto">
@@ -139,6 +138,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
 <script>
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
@@ -146,7 +146,7 @@
     socket.on('game_lobbies', function(data) {
         $('#game-lobbies').empty();
         $.each(data, function(index, lobby) {
-            $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', '));
+            $('#game-lobbies').append('<li>' + lobby.name + ': ' + lobby.users.join(', ')+ '</li>');
         });
     });
 
@@ -161,6 +161,44 @@
     });
 
 
+    // define a function to handle the response when the player joins a match
+    socket.on('player_joined_match', function(data) {
+        console.log('Player joined match:', data);
+    });
+
+    // define a function to handle the response when the player is unable to join a match
+    socket.on('unable_to_join_match', function(data) {
+        console.log('Unable to join match:', data);
+    });
+
+    // emit a 'join_match' event to the server
+    const data = {
+        match_id: 'match_id',
+        player2: 'player2'
+    };
+    socket.emit('join_match', data);
+
+    // redirect to lobby.html
+    const joinLobbyForm = document.querySelector('#join-lobby-form');
+      joinLobbyForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // prevent form submission
+        const lobbyName = document.querySelector('#join-lobby-name-input').value;
+        // check if lobby exists by sending a request to the server
+        fetch(`/api/lobby/${lobbyName}`)
+          .then(response => {
+            if (response.ok) {
+              // lobby exists, redirect to lobby.html with the lobby name as a query parameter
+              window.location.href = `lobby.html?name=${lobbyName}`;
+            } else {
+              // lobby does not exist, show an error message
+              alert(`Lobby "${lobbyName}" does not exist.`);
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            alert('An error occurred while joining the lobby.');
+          });
+      });
 </script>
 <script>
     $(document).ready(function(){
@@ -184,5 +222,6 @@
     });
 
 </script>
+
 </body>
 </html>
