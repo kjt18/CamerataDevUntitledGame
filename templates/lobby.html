@@ -29,17 +29,11 @@
             <li class="nav-item active">
                 <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
-            </li>
             <li>
                 <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
             </li>
             <li>
-                <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+                <a class="nav-link" href="/stats">&nbsp;Player Stats&nbsp;</a>
             </li>
         </ul>
         {% if session.username %}
@@ -54,6 +48,79 @@
         {% endif %}
     </div>
 </nav>
+<section id="cards3" class="container py-3 mt-3">
+    <div class="d-flex my-3">
+        <div class="jumbotron w-100 py-5 mx-auto text-light border-dark bg-dark-gray">
+            <h1>Player Instructions</h1>
+            <p>
+                Click the button below to expand or minimize the content.
+            </p>
+            <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#collapseExample"
+                    aria-expanded="false" aria-controls="collapseExample">Click Me
+            </button>
+            <div class="collapse" id="collapseExample">
+                <div class="card card-body text-light bg-dark-gray">
+                    <table class="table table-striped text-light">
+                        <thead>
+                        <tr>
+                            <th scope="col">Command</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>up</td>
+                            <td>Move player up one space</td>
+                        </tr>
+                        <tr>
+                            <td>down</td>
+                            <td>Move player down one space</td>
+                        </tr>
+                        <tr>
+                            <td>left</td>
+                            <td>Move player left one space</td>
+                        </tr>
+                        <tr>
+                            <td>right</td>
+                            <td>Move player right one space</td>
+                        </tr>
+                        <tr>
+                            <td>up left</td>
+                            <td>Move player up and left one space diagonally</td>
+                        </tr>
+                        <tr>
+                            <td>up right</td>
+                            <td>Move player up and right one space diagonally</td>
+                        </tr>
+                        <tr>
+                            <td>down left</td>
+                            <td>Move player down and left one space diagonally</td>
+                        </tr>
+                        <tr>
+                            <td>down right</td>
+                            <td>Move player down and right one space diagonally</td>
+                        </tr>
+                        <tr>
+                            <td>pickup</td>
+                            <td>Pick up an item in the player's current space</td>
+                        </tr>
+                        <tr>
+                            <td>inventory</td>
+                            <td>Show the player's current inventory</td>
+                        </tr>
+                        <tr>
+                            <td>descend</td>
+                            <td>Move the player down to the next level of the dungeon</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
 
 <section id="cards1" class="container py-5 mt-5">
     <div class="d-flex my-3">
@@ -66,42 +133,23 @@
                 <input type="text" id="command-input">
                 <button type="button" onclick="sendCommand()">Send</button>
             </form>
-            <div id="lobby-canvas" class="container py-5 mt-5">
-                <div class="d-flex my-3">
-                    <canvas id="game-canvas" width="600" height="800">
-                        {{ output }}
-                    </canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section id="cards2" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Create a New Game Lobby</h2>
-            <form id="create-lobby-form">
-                <label for="lobby-name-input">Lobby Name:</label>
-                <input type="text" id="lobby-name-input">
-                <button type="submit">Create Lobby</button>
-            </form>
         </div>
     </div>
 </section>
 
-<section id="cards3" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Join an Existing Game Lobby</h2>
-            <form id="join-lobby-form">
-                <label for="join-lobby-name-input">Lobby Name:</label>
-                <input type="text" id="join-lobby-name-input">
-                <button type="submit">Join Lobby</button>
-            </form>
-        </div>
-    </div>
-</section>
-
+<!--<section id="cards3" class="container py-5 mt-5">-->
+<!--    <div class="d-flex my-3">-->
+<!--        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">-->
+<!--            <h2>Join an Existing Game Lobby</h2>-->
+<!--            <form id="join-lobby-form">-->
+<!--                <label for="join-lobby-name-input">Lobby Name:</label>-->
+<!--                <input type="text" id="join-lobby-name-input">-->
+<!--                <button type="submit">Join Lobby</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -241,7 +289,6 @@
             document.getElementById("game-state").innerHTML = response.gameState;
         };
     };
-
 
 
 </script>

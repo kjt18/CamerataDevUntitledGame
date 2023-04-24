@@ -29,17 +29,14 @@
             <li class="nav-item active">
                 <a class="nav-link active" href="/">&nbsp;Home&nbsp; <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/about">&nbsp;About&nbsp;</a>
-            </li>
             <li>
                 <a class="nav-link" href="/game">&nbsp;Game&nbsp;</a>
             </li>
             <li>
                 <a class="nav-link" href="/register">&nbsp;Register&nbsp;</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link disabled">&nbsp;Future Features&nbsp;</a>
+            <li>
+                <a class="nav-link" href="/stats">&nbsp;Player Stats&nbsp;</a>
             </li>
         </ul>
         {% if session.username %}
@@ -64,8 +61,7 @@
         <p class="lead my-3">We are a small, 4 person development team that have created a new way to experience
             Rouge-like games for our Capstone project. In addition to the traditional Rouge-like
             experience, we have implemented online functionality, allowing you to compete against another players
-            in real time. Learn more about the game below.</p>
-        <p class="lead mb-0"><a href="/about" class="text-white font-weight-bold">Continue reading...</a></p>
+            in real time.</p>
     </div>
 </div>
 <!--add content on how to play the game-->
@@ -76,8 +72,8 @@
             <h4>Rogue-like Online Multiplayer Game</h4>
             <br>
             <p class="lead">
-                In this competitive multiplayer Rouge-like, players will be able to challenge each other
-                from any web browser. The traditional rules of a Rouge-like are found here, with a twist.
+                In this competitive multiplayer Rogue-like, players will be able to challenge each other
+                from any web browser. The traditional rules of a Rogue-like are found here, with a twist.
                 Similar to sending an opponent lines in tetris, players will earn points while making
                 their way through the dungeon floors. Their points will be compared and the loser will
                 have to endure a higher difficulty, such as a larger horde or more powerful monsters. Below
@@ -162,10 +158,8 @@
             </div>
             <div class="modal-body">
                 <h4>Public Games:</h4>
-                <p>stuff about public games goes here</p>
                 <br>
                 <h4>Private Games:</h4>
-                <p>stuff about private games goes here</p>
             </div>
             <div class="modal-footer">
                 <a href="/game"
@@ -289,6 +283,8 @@
     });
 
 
+
+
 </script>
 <script>
     window.addEventListener('scroll', function() {
@@ -303,6 +299,8 @@
             modal.classList.remove('fade-in');
         }
     });
+
+
 
 </script>
 </body>

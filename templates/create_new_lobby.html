@@ -55,38 +55,6 @@
     </div>
 </nav>
 
-<section id="cards1" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <span id="lobby-name"></span>
-            <div>
-                Users list:
-                <ul>
-                    <li>
-                        <span id="lobby-users"></span>
-                    </li>
-                </ul>
-            </div>
-            <div id="lobby-canvas" class="container py-5 mt-5">
-                <div class="d-flex my-3">
-                    <canvas id="game-canvas" width="600" height="800">
-                        {{ output }}
-                    </canvas>
-                </div>
-<!--            <div class="container">-->
-<!--                <h1>Server Output</h1>-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        {{ output }}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-        </div>
-    </div>
-    </div>
-    </div>
-</section>
-
 <section id="cards2" class="container py-5 mt-5">
     <div class="d-flex my-3">
         <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
@@ -95,19 +63,6 @@
                 <label for="lobby-name-input">Lobby Name:</label>
                 <input type="text" id="lobby-name-input">
                 <button type="submit">Create Lobby</button>
-            </form>
-        </div>
-    </div>
-</section>
-
-<section id="cards3" class="container py-5 mt-5">
-    <div class="d-flex my-3">
-        <div class="jumbotron w-100 py-5 mx-auto text-light border-light bg-dark-gray">
-            <h2>Join an Existing Game Lobby</h2>
-            <form id="join-lobby-form">
-                <label for="join-lobby-name-input">Lobby Name:</label>
-                <input type="text" id="join-lobby-name-input">
-                <button type="submit">Join Lobby</button>
             </form>
         </div>
     </div>
@@ -185,7 +140,31 @@
         $('.leave-lobby-btn').closest('li').remove();
     });
 
+</script>
 
+<script>
+  const form = document.getElementById('create-lobby-form');
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const lobbyName = document.getElementById('lobby-name-input').value;
+    window.location.href = '{{ url_for('lobby') }}';
+  });
+
+</script>
+<script>
+    // join
+    $(document).on('click', '.join-lobby-btn', function() {
+        var lobby_name = $(this).data('lobby-name');
+        var username = $('#username-input').val();
+        socket.emit('join_lobby', {'name': lobby_name, 'username': username});
+    });
+
+    // leave
+    $(document).on('click', '.leave-lobby-btn', function() {
+        var lobby_name = $(this).data('lobby-name');
+        var username = $(this).data('username');
+        socket.emit('leave_lobby', {'name': lobby_name, 'username': username});
+    });
 
 </script>
 </body>
